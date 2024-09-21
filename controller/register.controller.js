@@ -1,5 +1,5 @@
 // /controllers/registrationController.js
-const userService = require('../services/user.services');
+const { userServices, otpServices } = require('../services');
 const bcrypt = require('bcrypt');
 
 const register = async (req, res) => {
@@ -34,7 +34,7 @@ const register = async (req, res) => {
         }
 
         // Check if the email or mobile already exists in the database
-        const existingUser = await userService.findUserByEmailOrMobile(email, mobile);
+        const existingUser = await userServices.findUserByEmailOrMobile(email, mobile);
         console.log(existingUser);
 
         if (existingUser) {
@@ -55,9 +55,9 @@ const register = async (req, res) => {
                     type: existingUser.type,
                 };
 
-                const updateResult = await userService.updateData(updatedData);
+                const updateResult = await userServices.updateData(updatedData);
                 if (updateResult === 1) {
-                    const otpSent = await userService.sendOTP(mobile);
+                    const otpSent = await otpServices.sendOTP(mobile);
                     return res.status(200).json({ message: otpSent ? "OTP sent successfully." : "Failed to send OTP." });
                 } else {
                     return res.status(500).json({ message: "Failed to update user." });
@@ -66,7 +66,7 @@ const register = async (req, res) => {
         } else {
             // Register new user
             const hashedPassword = await bcrypt.hash(password, 10);
-            const randomSid = await userService.generateRandomNumber();
+            const randomSid = await userServices.generateRandomNumber();
 
             const newUserData = {
                 sid: randomSid,
@@ -80,10 +80,10 @@ const register = async (req, res) => {
                 status: 1
             };
 
-            const insertResult = await userService.insertData(newUserData);
+            const insertResult = await userServices.insertData(newUserData);
             if (insertResult === 1) {
-                const otpSent = await userService.sendOTP(mobile);
-                return res.status(200).json({ message: otpSent ? "User registered and OTP sent." : "User registered but failed to send OTP." });
+                const otpSent = await otpServices.sendOTP(mobile);
+                return res.status(201).json({ message: otpSent ? "User registered and OTP sent." : "User registered but failed to send OTP." });
             } else {
                 return res.status(500).json({ message: "Failed to register user." });
             }
@@ -95,31 +95,5 @@ const register = async (req, res) => {
     }
 }
 
-const verifyOTP = async (req, res) => {
-    const { mobile, otp } = req.body;
 
-    // Validate input
-    if (!mobile || !otp) {
-        return res.status(400).json({ message: 'Mobile number and OTP are required.' });
-    }
-
-    try {
-        const result = await userService.verifyOTP(mobile, otp);
-        console.log(result);
-
-        if (result === 1) {
-            return res.status(200).json({ message: 'OTP verified successfully.' });
-        } else {
-            if (result === 2) {
-                return res.status(400).json({ message: 'Mobile no. already verified' });
-            }
-            return res.status(400).json({ message: 'OTP not match' });
-        }
-    } catch (error) {
-        console.error('Error verifying OTP:', error);
-        return res.status(500).json({ message: 'An error occurred while verifying OTP.' });
-    }
-};
-
-
-module.exports = { register, verifyOTP };
+module.exports = { register };

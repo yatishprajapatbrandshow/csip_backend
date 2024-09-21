@@ -6,9 +6,10 @@ const router = express.Router();
 // Middleware
 const { validateRequestBody } = require("../middlewares");
 // Controllers
-const { registerController } = require("../controller");
+const { loginController } = require("../controller");
 
-// register user 
-router.post("/", registerController.register);
+// login user 
+router.post("/",loginController.login);
+
 
 module.exports = router;
