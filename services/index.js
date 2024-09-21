@@ -1,7 +1,5 @@
-const randomNumber = require('./randomNumber');
-const sendOTP = require('./sendOtp');
+const userServices = require('./user.services');
 
 module.exports = {
-    randomNumber,
-    sendOTP
+    userServices
 }
