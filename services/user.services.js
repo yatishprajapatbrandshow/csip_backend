@@ -2,13 +2,15 @@ const bcrypt = require('bcrypt');
 const pool = require('../connection'); // Use pool instead of a single connection
 const moment = require('moment');
 
-function generateSlug(input) {
+// generateSlug
+const generateSlug = async (input) => {
     input = input.trim();
     let slug = input.replace(/[^a-zA-Z0-9]/g, '-');
     slug = slug.toLowerCase();
     return slug;
 }
 
+// generateRandomNumber
 const generateRandomNumber = () => {
     const today = new Date();
     const month = today.getMonth() + 1;
@@ -19,7 +21,8 @@ const generateRandomNumber = () => {
     return Number(uniqueId);
 }
 
-async function insertData(data) {
+// insert Data
+const insertData = async (data) => {
     const connection = await pool.getConnection();
     const timestamp = moment().format('YYYY-MM-DD HH:mm:ss');
 
@@ -95,7 +98,7 @@ async function insertData(data) {
 }
 
 // Update data
-async function updateData(data) {
+const updateData = async (data) => {
     const connection = await pool.getConnection();
     const timestamp = moment().format('YYYY-MM-DD HH:mm:ss');
 
@@ -170,8 +173,8 @@ async function updateData(data) {
         connection.release();
     }
 }
-
-async function findUserByEmailOrMobile(email, mobile) {
+// find User By Email Or Mobile
+const findUserByEmailOrMobile = async (email, mobile) => {
     try {
         const query = `SELECT * FROM registrations WHERE email = ? OR mobile = ? LIMIT 1`;
         const [rows] = await pool.execute(query, [email, mobile]);
@@ -184,4 +187,17 @@ async function findUserByEmailOrMobile(email, mobile) {
     }
 }
 
-module.exports = { generateRandomNumber, insertData, updateData, findUserByEmailOrMobile };
+const findUser = async (email="", mobile="", name="") => {
+    try {
+        const query = `SELECT * FROM registrations WHERE email = ? OR mobile = ? OR name=? LIMIT 1`;
+        const [rows] = await pool.execute(query, [email, mobile, name]);
+        console.log(rows);
+
+        return rows.length > 0 ? rows[0] : null;
+    } catch (error) {
+        console.error("Error finding user by email or mobile: ", error);
+        throw error;
+    }
+}
+
+module.exports = { generateRandomNumber, insertData, updateData, findUserByEmailOrMobile, findUser };
