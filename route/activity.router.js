@@ -6,8 +6,11 @@ const router = express.Router();
 // Controllers
 const { activityController } = require("../controller");
 
-// Choose Curriculumn 
+// create activity 
 router.post("/add", activityController.addActivity);
+
+// Choose Curriculumn 
+router.get("/list", activityController.getActivities);
 
 
 module.exports = router;

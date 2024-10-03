@@ -1,5 +1,6 @@
 const { Activity } = require('../model')
 
+// add Activity
 const addActivity = async (req, res) => {
     try {
         const {
@@ -39,7 +40,7 @@ const addActivity = async (req, res) => {
         if (!participant_quantity) missingFields.push('participant_quantity');
         if (!activity_type) missingFields.push('activity_type');
         if (need_approval === undefined) missingFields.push('need_approval');
- 
+
 
 
 
@@ -49,7 +50,7 @@ const addActivity = async (req, res) => {
                 message: `Missing required fields: ${missingFields.join(', ')}.`,
                 data: false
             });
-       } 
+        }
 
         // Generate a unique sid
         const existingActivities = await Activity.find({}, 'sid'); // Fetch all existing sids
@@ -104,6 +105,44 @@ const addActivity = async (req, res) => {
         });
     }
 };
+// Get Activity
+const getActivities = async (req, res) => {
+    const { page = 1, limit = 10 } = req.query; // Get page and limit from query params
+
+    const options = {
+        page: parseInt(page, 10),
+        limit: parseInt(limit, 10)
+    };
+
+    try {
+        const activities = await Activity.find()
+            .skip((options.page - 1) * options.limit) // Skip the number of documents based on page
+            .limit(options.limit) // Limit the number of documents returned
+            .sort({ createdAt: -1 }); // Optionally sort activities
+
+        const totalActivities = await Activity.countDocuments(); // Get total count for pagination
+        const totalPages = Math.ceil(totalActivities / options.limit); // Calculate total pages
+
+        res.status(200).json({
+            status: true,
+            message: 'Activities retrieved successfully',
+            data: activities,
+            pagination: {
+                totalItems: totalActivities,
+                totalPages: totalPages,
+                currentPage: options.page,
+                limit: options.limit
+            }
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            status: false,
+            message: error.message,
+            data: false
+        });
+    }
+};
 
 // Generate unique ID function
 const generateUniqueId = async (existingIds) => {
@@ -132,5 +171,6 @@ function formatDate(date) {
 }
 
 module.exports = {
-    addActivity
+    addActivity,
+    getActivities
 };
