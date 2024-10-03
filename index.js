@@ -2,7 +2,6 @@
 require("dotenv").config();
 const express = require("express");
 const db = require('./mongoConnection')
-db();
 const app = express();
 const cors = require("cors");
 // Middleware to parse JSON bodies
