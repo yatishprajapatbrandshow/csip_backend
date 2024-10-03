@@ -39,7 +39,10 @@ const addActivity = async (req, res) => {
         if (!participant_quantity) missingFields.push('participant_quantity');
         if (!activity_type) missingFields.push('activity_type');
         if (need_approval === undefined) missingFields.push('need_approval');
+ 
 
+
+        
         if (missingFields.length > 0) {
             return res.status(400).json({
                 status: false,
