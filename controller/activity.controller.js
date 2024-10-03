@@ -1,4 +1,5 @@
 const { Activity } = require('../model')
+
 const addActivity = async (req, res) => {
     try {
         const {
@@ -45,7 +46,7 @@ const addActivity = async (req, res) => {
                 message: `Missing required fields: ${missingFields.join(', ')}.`,
                 data: false
             });
-        }
+       } 
 
         // Generate a unique sid
         const existingActivities = await Activity.find({}, 'sid'); // Fetch all existing sids

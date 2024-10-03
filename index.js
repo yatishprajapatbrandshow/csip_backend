@@ -13,26 +13,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Health Check Route
-// app.get("/health", (req, res) => {
-//   res.status(200).send("OK");
-// });
-// const { registerRouter, loginRouter, otpRouter,userRouter,curriculumRouter,activityRouter } = require("./route");
+app.get("/health", (req, res) => {
+  res.status(200).send("OK");
+});
+
 const { activityRouter } = require("./route");
-
-// // Register Route
-// app.use("/register", registerRouter);
-
-// // login Routes
-// app.use("/login", loginRouter);
-
-// // OTP Routes
-// app.use("/otp", otpRouter);
-
-// // User Data Routes
-// app.use("/user", userRouter);
-
-// // User Data Routes
-// app.use("/curriculum", curriculumRouter);
 
 // User Data Routes
 app.use("/activity", activityRouter);
