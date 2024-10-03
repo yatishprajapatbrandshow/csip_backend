@@ -3,10 +3,12 @@ const otpController = require('./otp.controller')
 const loginController = require('./login.controller')
 const userController = require('./user.controller')
 const curriculumController=require('./curriculum.controller')
+const activityController=require('./activity.controller')
 module.exports = {
     registerController,
     loginController,
     otpController,
     userController,
-    curriculumController
+    curriculumController,
+    activityController
 }

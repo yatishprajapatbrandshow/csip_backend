@@ -15,7 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/health", (req, res) => {
   res.status(200).send("OK");
 });
-const { registerRouter, loginRouter, otpRouter,userRouter,curriculumRouter } = require("./route");
+const { registerRouter, loginRouter, otpRouter,userRouter,curriculumRouter,activityRouter } = require("./route");
 
 // Register Route
 app.use("/register", registerRouter);
@@ -31,6 +31,9 @@ app.use("/user", userRouter);
 
 // User Data Routes
 app.use("/curriculum", curriculumRouter);
+
+// User Data Routes
+app.use("/activity", activityRouter);
 
 // Start the server
 const port = process.env.PORT || 3000;
