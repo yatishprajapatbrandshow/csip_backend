@@ -42,7 +42,7 @@ const addActivity = async (req, res) => {
  
 
 
-        
+
         if (missingFields.length > 0) {
             return res.status(400).json({
                 status: false,

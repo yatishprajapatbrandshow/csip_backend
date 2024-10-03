@@ -16,10 +16,12 @@ app.get("/health", (req, res) => {
   res.status(200).send("OK");
 });
 
-const { activityRouter } = require("./route");
+const { activityRouter,topicRouter } = require("./route");
 
 // User Data Routes
 app.use("/activity", activityRouter);
+
+app.use("/topic", topicRouter);
 
 // Start the server
 const port = process.env.PORT || 3000;
