@@ -124,7 +124,9 @@ const updateActivity = async (req, res) => {
 
         // Update only the fields specified in the current step
         for (const field of requiredFields) {
-            activity[field] = req.body[field];
+            if (req.body[field] !== "") {
+                activity[field] = req.body[field];
+            }
         }
 
         // Set the edited timestamp
