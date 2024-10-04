@@ -22,27 +22,23 @@ const registrationSchema = new mongoose.Schema({
     mobile: {
         type: Number,
         required: true,
+        unique: true
     },
     dob: {
         type: Date,
-        required: true,
     },
     gender: {
         type: String,
         enum: ['Male', 'Female', 'Other'],
-        required: true,
     },
     city: {
         type: String,
-        required: true,
     },
     state: {
         type: String,
-        required: true,
     },
     pincode: {
         type: Number,
-        required: true,
     },
     participantpic: {
         type: String,
@@ -50,12 +46,9 @@ const registrationSchema = new mongoose.Schema({
     tshirtsize: {
         type: String,
         enum: ['Small', 'Medium', 'Large', 'Extra Large'],
-        required: true,
     },
     aadhar_number: {
         type: Number,
-        required: true,
-        unique: true,
     },
     type: {
         type: String,
