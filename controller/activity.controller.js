@@ -1,64 +1,28 @@
 const { Activity } = require('../model')
-
-// add Activity
+const steps = {
+    2: ["case_scenario", "case_scenario_title", "description", "note"],
+    3: ["corporate_hierarchy_overview", "corporate_id", "tag", "topic_id"],
+    4: ["tools_used", "snap_shot", "youtube_video_link", "image_assc"],
+    5: ["entry_type", "activity_category", "activity_type", "amount", "job_roles_and_description"],
+    6: ["participant_quantity", "need_approval"],
+    7: ["activity_start_date", "activity_end_date", "submission_start_date", "submission_end_date"],
+}
+// Add Activity
 const addActivity = async (req, res) => {
     try {
         const {
             name,
-            objective,
-            case_scenario,
-            case_scenario_title,
-            corporate_hierarchy_overview,
-            tools_used,
-            job_roles_and_description,
-            snap_shot,
-            youtube_video_link,
             short_name,
-            note,
-            short_desc,
-            description,
-            image_assc,
-            amount,
-            corporate_id,
-            topic_id,
-            tag,
-            entry_type,
-            activity_category,
-            participant_quantity,
-            activity_start_date,
-            activity_end_date,
-            submission_start_date,
-            submission_end_date,
-            activity_type,
-            need_approval
+            objective,
+            short_desc
         } = req.body;
 
         // Validate required fields
         const missingFields = []; // Array to hold missing fields
         if (!name) missingFields.push('name');
         if (!short_name) missingFields.push('short_name');
-        if (!activity_start_date) missingFields.push('activity_start_date');
-        if (!activity_end_date) missingFields.push('activity_end_date');
-        if (!corporate_id) missingFields.push('corporate_id');
-        if (!topic_id) missingFields.push('topic_id');
-        if (!submission_start_date) missingFields.push('submission_start_date');
-        if (!submission_end_date) missingFields.push('submission_end_date');
-        if (!entry_type) missingFields.push('entry_type');
-        if (!activity_category) missingFields.push('activity_category');
-        if (!participant_quantity) missingFields.push('participant_quantity');
-        if (!activity_type) missingFields.push('activity_type');
         if (!objective) missingFields.push('objective');
-        if (!case_scenario) missingFields.push('case_scenario');
-        if (!case_scenario_title) missingFields.push('case_scenario_title');
-        if (!corporate_hierarchy_overview) missingFields.push('corporate_hierarchy_overview');
-        if (!tools_used) missingFields.push('tools_used');
-        if (!job_roles_and_description) missingFields.push('job_roles_and_description');
-        if (!snap_shot) missingFields.push('snap_shot');
-        if (!youtube_video_link) missingFields.push('youtube_video_link');
-        if (need_approval === undefined) missingFields.push('need_approval');
-
-
-
+        if (!short_desc) missingFields.push('short_desc');
 
         if (missingFields.length > 0) {
             return res.status(400).json({
@@ -77,36 +41,11 @@ const addActivity = async (req, res) => {
         const newActivity = new Activity({
             sid,
             name,
-            objective,
-            case_scenario,
-            case_scenario_title,
-            corporate_hierarchy_overview,
-            tools_used,
-            job_roles_and_description,
-            snap_shot,
-            youtube_video_link,
             short_name,
-            note: note || '',
-            short_desc: short_desc || 'No description provided',
-            description: description || '',
-            image_assc: image_assc || 'default.jpg',
-            amount: amount || 0,
-            corporate_id: corporate_id || 0,
-            topic_id: topic_id || 0,
-            tag: tag || '',
-            entry_type: entry_type || 'online',
-            activity_category: activity_category || 'General',
-            participant_quantity: participant_quantity || 1,
-            activity_start_date,
-            activity_end_date,
-            submission_start_date: submission_start_date || new Date(),
-            submission_end_date: submission_end_date || null,
-            activity_type: activity_type || 'MCQ',
-            need_approval: need_approval !== undefined ? need_approval : false,
+            objective,
+            short_desc,
             addedon: formatDate(new Date()),
-            addedby: corporate_id || 'admin',
             editedon: formatDate(new Date()),
-            editedby: corporate_id || 'admin',
             status: 1,
             deleteflage: 0
         });
@@ -129,6 +68,87 @@ const addActivity = async (req, res) => {
         });
     }
 };
+// Update Activity
+const updateActivity = async (req, res) => {
+    try {
+        const {
+            step,
+            _id
+        } = req.body;
+
+        // Define required fields for each step
+        const steps = {
+            2: ["case_scenario", "case_scenario_title", "description", "note"],
+            3: ["corporate_hierarchy_overview", "corporate_id", "tag", "topic_id"],
+            4: ["tools_used", "snap_shot", "youtube_video_link", "image_assc"],
+            5: ["entry_type", "activity_category", "activity_type", "amount", "job_roles_and_description"],
+            6: ["participant_quantity", "need_approval"],
+            7: ["activity_start_date", "activity_end_date", "submission_start_date", "submission_end_date"],
+        };
+
+        // Validate step and required fields
+        const requiredFields = steps[step];
+
+        // Check if the step is valid
+        if (!requiredFields) {
+            return res.status(400).json({
+                status: false,
+                message: 'Invalid step provided.',
+                data: false
+            });
+        }
+
+        // Initialize array to hold missing fields
+        const missingFields = requiredFields.filter(field => req.body[field] === undefined);
+
+        // Return error if there are missing fields
+        if (missingFields.length > 0) {
+            return res.status(400).json({
+                status: false,
+                message: `Missing required fields: ${missingFields.join(', ')}.`,
+                data: false
+            });
+        }
+
+        // Find the existing activity to update
+        const activity = await Activity.findById(_id);
+
+        // If activity is not found, return an error
+        if (!activity) {
+            return res.status(404).json({
+                status: false,
+                message: 'Activity not found.',
+                data: false
+            });
+        }
+
+        // Update only the fields specified in the current step
+        for (const field of requiredFields) {
+            activity[field] = req.body[field];
+        }
+
+        // Set the edited timestamp
+        activity.editedon = formatDate(new Date());
+
+        // Save the updated activity
+        const updatedActivity = await activity.save();
+
+        // Send success response
+        res.status(200).json({
+            status: true,
+            message: 'Activity updated successfully',
+            data: updatedActivity
+        });
+    } catch (error) {
+        console.error(error); // Log the error for debugging
+        res.status(500).json({
+            status: false,
+            message: error.message,
+            data: false
+        });
+    }
+};
+
 // Get Activity
 const getActivities = async (req, res) => {
     const { page = 1, limit = 10 } = req.query; // Get page and limit from query params
@@ -195,5 +215,6 @@ function formatDate(date) {
 
 module.exports = {
     addActivity,
-    getActivities
+    getActivities,
+    updateActivity
 };

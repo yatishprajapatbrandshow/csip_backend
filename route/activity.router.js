@@ -12,5 +12,8 @@ router.post("/add", activityController.addActivity);
 // Choose Curriculumn 
 router.get("/list", activityController.getActivities);
 
+// update
+router.post("/step", activityController.updateActivity);
+
 
 module.exports = router;
