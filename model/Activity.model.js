@@ -12,7 +12,7 @@ const activitySchema = new Schema({
     tools_used: { type: String, required: true },
     job_roles_and_description: { type: String, required: true },
     snap_shot: { type: String, required: true },
-    youtube_video_link: { type: String, required: true },
+    youtube_video_link: { type: Array, required: true },
     short_name: { type: String, required: true },
     note: { type: String, default: '' },
     short_desc: { type: String, default: 'No description provided' },
