@@ -5,6 +5,14 @@ const addActivity = async (req, res) => {
     try {
         const {
             name,
+            objective,
+            case_scenario,
+            case_scenario_title,
+            corporate_hierarchy_overview,
+            tools_used,
+            job_roles_and_description,
+            snap_shot,
+            youtube_video_link,
             short_name,
             note,
             short_desc,
@@ -39,6 +47,14 @@ const addActivity = async (req, res) => {
         if (!activity_category) missingFields.push('activity_category');
         if (!participant_quantity) missingFields.push('participant_quantity');
         if (!activity_type) missingFields.push('activity_type');
+        if (!objective) missingFields.push('objective');
+        if (!case_scenario) missingFields.push('case_scenario');
+        if (!case_scenario_title) missingFields.push('case_scenario_title');
+        if (!corporate_hierarchy_overview) missingFields.push('corporate_hierarchy_overview');
+        if (!tools_used) missingFields.push('tools_used');
+        if (!job_roles_and_description) missingFields.push('job_roles_and_description');
+        if (!snap_shot) missingFields.push('snap_shot');
+        if (!youtube_video_link) missingFields.push('youtube_video_link');
         if (need_approval === undefined) missingFields.push('need_approval');
 
 
@@ -61,6 +77,14 @@ const addActivity = async (req, res) => {
         const newActivity = new Activity({
             sid,
             name,
+            objective,
+            case_scenario,
+            case_scenario_title,
+            corporate_hierarchy_overview,
+            tools_used,
+            job_roles_and_description,
+            snap_shot,
+            youtube_video_link,
             short_name,
             note: note || '',
             short_desc: short_desc || 'No description provided',
@@ -153,7 +177,6 @@ const generateUniqueId = async (existingIds) => {
     } while (existingIds.includes(id)); // Ensure the ID is unique
     return id;
 };
-
 // Format date function
 function formatDate(date) {
     if (!(date instanceof Date) || isNaN(date)) {
