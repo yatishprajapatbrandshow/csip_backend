@@ -85,9 +85,8 @@ const loginWithEmail = async (req, res) => {
         if (!passwordMatch) {
             return res.status(400).json({ status: false, message: 'Invalid email or password', data: false });
         }
-
-        // Optionally remove the password field for security in the response
-        delete user.password;
+        
+        
 
         // If all checks pass, return success response with user data
         return res.status(200).json({
