@@ -16,7 +16,7 @@ app.get("/health", (req, res) => {
   res.status(200).send("OK");
 });
 
-const { activityRouter,topicRouter,loginRouter,registerRouter } = require("./route");
+const { activityRouter, topicRouter, loginRouter, registerRouter, curriculumRouter } = require("./route");
 
 // Register Route
 app.use("/register", registerRouter);
@@ -30,10 +30,10 @@ app.use("/login", loginRouter);
 // // // User Data Routes
 // app.use("/user", userRouter);
 
-// // // // User Data Routes
-// app.use("/curriculum", curriculumRouter);
+// curriculum Data Routes
+app.use("/curriculum", curriculumRouter);
 
-// User Data Routes
+// activity Routes
 app.use("/activity", activityRouter);
 
 // topic Data Routes

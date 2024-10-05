@@ -15,7 +15,7 @@ const SearchTopics = async (req, res) => {
     }
 
     // Find topics that match the search query (case insensitive)
-    const topics = await Topic.find({ topic: new RegExp(TopicSearch, 'i') });
+    const topics = await Topic.find({ topic: new RegExp(TopicSearch, 'i') }).limit(10);
 
     if (topics.length > 0) {
       return res.json({
@@ -121,7 +121,51 @@ const addTopics = async (req, res) => {
     });
   }
 };
+// Remove Topics
+const removeTopics = async (req, res) => {
+  try {
+      const participantId = req.body.participant_id;
+      const topicsToRemove = req.body.TopicsList || []; // Topics to remove
+      const programName = req.body.program || "";
 
+      if (topicsToRemove.length === 0) {
+          return res.status(400).json({
+              message: "No topics selected for removal.",
+          });
+      }
+
+      // Find the existing topic map for the participant
+      const existingTopicMap = await TopicMap.findOne({ participant_id: participantId });
+
+      if (!existingTopicMap) {
+          return res.status(404).json({
+              message: "No topic mapping found for this participant.",
+          });
+      }
+
+      // Filter out topics to remove from the existing topic mapping
+      existingTopicMap.topics = existingTopicMap.topics.filter(
+          (topicId) => !topicsToRemove.includes(topicId)
+      );
+
+      // Update program name if provided
+      if (programName) {
+          existingTopicMap.program_name = programName;
+      }
+
+      await existingTopicMap.save(); // Save the changes
+
+      return res.status(200).json({
+          message: "Topics removed successfully",
+          remainingTopics: existingTopicMap.topics, // Optional: return the remaining topics
+      });
+  } catch (error) {
+      console.error("Error in removing topics from user:", error);
+      return res.status(500).json({
+          message: "An unexpected error occurred. Please try again later.",
+      });
+  }
+};
 // Function to add a new topic
 const createTopic = async (req, res) => {
   try {
@@ -193,7 +237,6 @@ const createTopic = async (req, res) => {
   }
 };
 
-
 // Helper function to generate a unique SID
 const generateUniqueSid = async () => {
   let sid;
@@ -211,5 +254,6 @@ const generateUniqueSid = async () => {
 module.exports = {
   SearchTopics,
   addTopics,
-  createTopic
+  createTopic,
+  removeTopics
 };

@@ -3,7 +3,6 @@ const { Schema } = mongoose;
 
 // Define the schema for topics
 const topicSchema = new Schema({
-    id: { type: mongoose.Schema.Types.ObjectId, auto: true }, // Auto-generated ID
     sid: { type: Number, required: true, unique: true },
     participant_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Participant', required: true },
     topic: { type: String, required: true },
