@@ -101,21 +101,21 @@ const updateUser = async (req, res) => {
         const { sid, name, email, mobile, dob, gender, city, state, pincode, participantpic, tshirtsize, aadhar_number, password, r_password } = req.body;
 
         // Validate required fields
-        if (!sid || !name || !email || !mobile || !dob || !gender || !city || !state || !pincode || !tshirtsize || !aadhar_number) {
-            return res.status(400).json({ message: "Missing required fields." });
+        if (!sid) {
+            return res.status(400).json({ message: "Missing required fields. sid" });
         }
 
         // Validate email
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            return res.status(400).json({ message: "Invalid email format." });
-        }
+        // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        // if (!emailRegex.test(email)) {
+        //     return res.status(400).json({ message: "Invalid email format." });
+        // }
 
-        // Validate mobile number (10 digits)
-        const mobileRegex = /^[0-9]{10}$/;
-        if (!mobileRegex.test(mobile)) {
-            return res.status(400).json({ message: "Invalid mobile number." });
-        }
+        // // Validate mobile number (10 digits)
+        // const mobileRegex = /^[0-9]{10}$/;
+        // if (!mobileRegex.test(mobile)) {
+        //     return res.status(400).json({ message: "Invalid mobile number." });
+        // }
 
         // Validate password if provided
         if (password) {
