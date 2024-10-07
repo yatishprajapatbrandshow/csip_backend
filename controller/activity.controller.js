@@ -161,7 +161,7 @@ const getActivities = async (req, res) => {
     };
 
     try {
-        const activities = await Activity.find()
+        const activities = await Activity.find({status:1})
             .skip((options.page - 1) * options.limit) // Skip the number of documents based on page
             .limit(options.limit) // Limit the number of documents returned
             .sort({ createdAt: -1 }); // Optionally sort activities
