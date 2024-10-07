@@ -85,7 +85,9 @@ const loginWithEmail = async (req, res) => {
         if (!passwordMatch) {
             return res.status(400).json({ status: false, message: 'Invalid email or password', data: false });
         }
-        const { name, mobile, dob, gender, city, state, pincode, aadhar_number, tshirtsize, sid, participantpic } = user;
+        console.log(user);
+        
+        const { name, mobile, dob, gender, city, state, pincode, aadhar_number, tshirtsize, sid, participantpic,type } = user;
 
         // If all checks pass, return success response with user data
         return res.status(200).json({
@@ -103,7 +105,8 @@ const loginWithEmail = async (req, res) => {
                 aadhar_number,
                 tshirtsize,
                 sid,
-                participantpic
+                participantpic,
+                type
             }
         });
 
