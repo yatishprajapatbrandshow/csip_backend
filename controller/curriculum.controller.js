@@ -109,10 +109,31 @@ const getCurriculumDetails = async (req, res) => {
             { $match: { curriculum_sid: Number(curriculum_sid), deleteflag: false } },  // Match groups by curriculum_sid
             {
                 $lookup: {
-                    from: 'curri_group_topic_maps',  // Collection for topics
+                    from: 'curri_group_topic_maps',  // Collection for topics mapping
                     localField: 'sid',  // Group SID in CurriculumGroupMap
                     foreignField: 'gorup_sid',  // Group SID in CurriculumGroupTopicMap
-                    as: 'topics'  // Embedded array of topics within the group
+                    as: 'topicMappings'  // Embedded array of topic mappings within the group
+                }
+            },
+            {
+                $unwind: { path: '$topicMappings', preserveNullAndEmptyArrays: true }  // Unwind the topicMappings array
+            },
+            {
+                $lookup: {
+                    from: 'topics',  // Collection for full topic details
+                    localField: 'topicMappings.topic_sid',  // Match topic_sid from the topicMappings
+                    foreignField: 'sid',  // The topic's sid in the Topics collection
+                    as: 'topicDetails'  // Embedded array of topic details
+                }
+            },
+            {
+                $unwind: { path: '$topicDetails', preserveNullAndEmptyArrays: true }  // Unwind the topicDetails array
+            },
+            {
+                $group: {
+                    _id: '$sid',  // Group by group SID
+                    groupName: { $first: '$group_name' },  // Include group name
+                    topics: { $push: '$topicDetails' }  // Accumulate topic details
                 }
             }
         ]);
@@ -130,11 +151,12 @@ const getCurriculumDetails = async (req, res) => {
     } catch (error) {
         return res.status(500).json({
             status: false,
-            message: "Failed to fetch curriculum details" + error.message,
+            message: "Failed to fetch curriculum details: " + error.message,
             data: false
         });
     }
 };
+    
 
 // choose Curriculum
 const chooseCurriculumn = async (req, res) => {
