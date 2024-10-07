@@ -154,22 +154,19 @@ const updateActivity = async (req, res) => {
 // Get Activity
 const getActivities = async (req, res) => {
     const { page = 1, limit = 10, corporate_id } = req.query; // Get page and limit from query params
-
-    if (!corporate_id || corporate_id == "") {
-        return res.status(400).json({
-            status: false,
-            message: 'Missing corporate_id',
-            data: false,
-        });
+    const query = {
+        status: 1,
     }
-
+    if (corporate_id) {
+        query.corporate_id = corporate_id
+    }
     const options = {
         page: parseInt(page, 10),
         limit: parseInt(limit, 10)
     };
 
     try {
-        const activities = await Activity.find({ status: 1, corporate_id })
+        const activities = await Activity.find(query)
             .skip((options.page - 1) * options.limit) // Skip the number of documents based on page
             .limit(options.limit) // Limit the number of documents returned
             .sort({ createdAt: -1 }); // Optionally sort activities
