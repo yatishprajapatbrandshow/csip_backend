@@ -16,7 +16,7 @@ app.get("/health", (req, res) => {
   res.status(200).send("OK");
 });
 
-const { activityRouter, topicRouter, loginRouter, registerRouter, curriculumRouter,favouriteActivityRouter } = require("./route");
+const { activityRouter, topicRouter, loginRouter, registerRouter, curriculumRouter,favouriteActivityRouter,otpRouter } = require("./route");
 
 // Register Route
 app.use("/register", registerRouter);
@@ -24,10 +24,10 @@ app.use("/register", registerRouter);
 // login Routes
 app.use("/login", loginRouter);
 
-// // // OTP Routes
-// app.use("/otp", otpRouter);
+// OTP Routes
+app.use("/otp", otpRouter);
 
-// // // User Data Routes
+// User Data Routes
 // app.use("/user", userRouter);
 
 // curriculum Data Routes
@@ -43,7 +43,7 @@ app.use("/favourite-activity", favouriteActivityRouter);
 app.use("/topic", topicRouter);
 
 // Start the server
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 app.listen(port, () => {
   console.log(`Server is running at Port:${port}`);
 });

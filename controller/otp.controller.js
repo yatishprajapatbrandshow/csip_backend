@@ -6,7 +6,7 @@ const sendOTP = async (req, res) => {
 
     // Validate input
     if (!mobile) {
-        return res.status(400).json({ message: 'Mobile number is required.' });
+        return res.status(400).json({ status: false, message: 'Mobile number is required.', data: false });
     }
 
     try {
@@ -15,15 +15,15 @@ const sendOTP = async (req, res) => {
 
         if (result) {
             // OTP sent successfully
-            return res.status(200).json({ message: 'OTP sent successfully.' });
+            return res.status(200).json({ status: true, message: 'OTP sent successfully.', data: false });
         } else {
             // Error while sending OTP
-            return res.status(400).json({ message: 'OTP not sent. Please try again later.' });
+            return res.status(400).json({ status: false, message: 'OTP not sent. Please try again later.', data: false });
         }
     } catch (error) {
         // Handle any errors during the process
         console.error('Error sending OTP:', error);
-        return res.status(500).json({ message: 'An error occurred while sending OTP.' });
+        return res.status(500).json({ status: false, message: 'An error occurred while sending OTP.', data: false });
     }
 };
 
@@ -33,29 +33,29 @@ const verifyOTP = async (req, res) => {
 
     // Validate input
     if (!mobile || !otp) {
-        return res.status(400).json({ message: 'Mobile number and OTP are required.' });
+        return res.status(400).json({ status: false, message: 'Mobile number and OTP are required.', data: false });
     }
 
     try {
         // Call the otpServices to verify the OTP
         const result = await otpServices.verifyOTP(mobile, otp);
-        
+
         // OTP verification successful
         if (result === 1) {
-            return res.status(200).json({ message: 'OTP verified successfully.' });
-        } 
+            return res.status(200).json({ status: true, message: 'OTP verified successfully.', data: false });
+        }
         // Mobile number already verified
         else if (result === 2) {
-            return res.status(400).json({ message: 'Mobile number already verified.' });
-        } 
+            return res.status(400).json({ status: false, message: 'Mobile number already verified.', data: false });
+        }
         // OTP did not match
         else {
-            return res.status(400).json({ message: 'Invalid OTP. Please try again.' });
+            return res.status(400).json({ status: false, message: 'Invalid OTP. Please try again.', data: false });
         }
     } catch (error) {
         // Handle errors during verification
         console.error('Error verifying OTP:', error);
-        return res.status(500).json({ message: 'An error occurred while verifying OTP.' });
+        return res.status(500).json({ status: false, message: 'An error occurred while verifying OTP.', data: false });
     }
 };
 
