@@ -4,7 +4,7 @@ const { Topic, TopicMap } = require("../model"); // Import the Topic and TopicMa
 const SearchTopics = async (req, res) => {
   try {
     const { TopicSearch } = req.body;
-
+    
     // Validate input
     if (!TopicSearch) {
       return res.status(400).json({
@@ -27,7 +27,7 @@ const SearchTopics = async (req, res) => {
       return res.status(404).json({
         status: false,
         message: "No topics found",
-        data: null,
+        data: [],
       });
     }
   } catch (error) {
