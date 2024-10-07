@@ -85,7 +85,6 @@ const loginWithEmail = async (req, res) => {
         if (!passwordMatch) {
             return res.status(400).json({ status: false, message: 'Invalid email or password', data: false });
         }
-        console.log(user);
         
         const { name, mobile, dob, gender, city, state, pincode, aadhar_number, tshirtsize, sid, participantpic,type } = user;
 
