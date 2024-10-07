@@ -35,7 +35,347 @@ const activitySchema = new Schema({
     addedby: { type: String, default: 'admin' },
     editedby: { type: String, default: 'admin' },
     status: { type: Number, default: 1 },
-    deleteflage: { type: Number, default: 0 }
+    deleteflage: { type: Number, default: 0 },
+    // Params
+    param1_name: {
+        type: String,
+        default: ""
+    },
+    param1_desc: {
+        type: String,
+        default: ""
+    },
+    param1_img: {
+        type: String,
+        default: ""
+    },
+    param1_link: {
+        type: String,
+        default: ""
+    },
+
+    param2_name: {
+        type: String,
+        default: ""
+    },
+    param2_desc: {
+        type: String,
+        default: ""
+    },
+    param2_img: {
+        type: String,
+        default: ""
+    },
+    param2_link: {
+        type: String,
+        default: ""
+    },
+
+    param3_name: {
+        type: String,
+        default: ""
+    },
+    param3_desc: {
+        type: String,
+        default: ""
+    },
+    param3_img: {
+        type: String,
+        default: ""
+    },
+    param3_link: {
+        type: String,
+        default: ""
+    },
+
+    param4_name: {
+        type: String,
+        default: ""
+    },
+    param4_desc: {
+        type: String,
+        default: ""
+    },
+    param4_img: {
+        type: String,
+        default: ""
+    },
+    param4_link: {
+        type: String,
+        default: ""
+    },
+
+    param5_name: {
+        type: String,
+        default: ""
+    },
+    param5_desc: {
+        type: String,
+        default: ""
+    },
+    param5_img: {
+        type: String,
+        default: ""
+    },
+    param5_link: {
+        type: String,
+        default: ""
+    },
+
+    param6_name: {
+        type: String,
+        default: ""
+    },
+    param6_desc: {
+        type: String,
+        default: ""
+    },
+    param6_img: {
+        type: String,
+        default: ""
+    },
+    param6_link: {
+        type: String,
+        default: ""
+    },
+
+    param7_name: {
+        type: String,
+        default: ""
+    },
+    param7_desc: {
+        type: String,
+        default: ""
+    },
+    param7_img: {
+        type: String,
+        default: ""
+    },
+    param7_link: {
+        type: String,
+        default: ""
+    },
+
+    param8_name: {
+        type: String,
+        default: ""
+    },
+    param8_desc: {
+        type: String,
+        default: ""
+    },
+    param8_img: {
+        type: String,
+        default: ""
+    },
+    param8_link: {
+        type: String,
+        default: ""
+    },
+
+    param9_name: {
+        type: String,
+        default: ""
+    },
+    param9_desc: {
+        type: String,
+        default: ""
+    },
+    param9_img: {
+        type: String,
+        default: ""
+    },
+    param9_link: {
+        type: String,
+        default: ""
+    },
+
+    param10_name: {
+        type: String,
+        default: ""
+    },
+    param10_desc: {
+        type: String,
+        default: ""
+    },
+    param10_img: {
+        type: String,
+        default: ""
+    },
+    param10_link: {
+        type: String,
+        default: ""
+    },
+
+    param11_name: {
+        type: String,
+        default: ""
+    },
+    param11_desc: {
+        type: String,
+        default: ""
+    },
+    param11_img: {
+        type: String,
+        default: ""
+    },
+    param11_link: {
+        type: String,
+        default: ""
+    },
+
+    param12_name: {
+        type: String,
+        default: ""
+    },
+    param12_desc: {
+        type: String,
+        default: ""
+    },
+    param12_img: {
+        type: String,
+        default: ""
+    },
+    param12_link: {
+        type: String,
+        default: ""
+    },
+
+    param13_name: {
+        type: String,
+        default: ""
+    },
+    param13_desc: {
+        type: String,
+        default: ""
+    },
+    param13_img: {
+        type: String,
+        default: ""
+    },
+    param13_link: {
+        type: String,
+        default: ""
+    },
+
+    param14_name: {
+        type: String,
+        default: ""
+    },
+    param14_desc: {
+        type: String,
+        default: ""
+    },
+    param14_img: {
+        type: String,
+        default: ""
+    },
+    param14_link: {
+        type: String,
+        default: ""
+    },
+
+    param15_name: {
+        type: String,
+        default: ""
+    },
+    param15_desc: {
+        type: String,
+        default: ""
+    },
+    param15_img: {
+        type: String,
+        default: ""
+    },
+    param15_link: {
+        type: String,
+        default: ""
+    },
+
+    param16_name: {
+        type: String,
+        default: ""
+    },
+    param16_desc: {
+        type: String,
+        default: ""
+    },
+    param16_img: {
+        type: String,
+        default: ""
+    },
+    param16_link: {
+        type: String,
+        default: ""
+    },
+
+    param17_name: {
+        type: String,
+        default: ""
+    },
+    param17_desc: {
+        type: String,
+        default: ""
+    },
+    param17_img: {
+        type: String,
+        default: ""
+    },
+    param17_link: {
+        type: String,
+        default: ""
+    },
+
+    param18_name: {
+        type: String,
+        default: ""
+    },
+    param18_desc: {
+        type: String,
+        default: ""
+    },
+    param18_img: {
+        type: String,
+        default: ""
+    },
+    param18_link: {
+        type: String,
+        default: ""
+    },
+
+    param19_name: {
+        type: String,
+        default: ""
+    },
+    param19_desc: {
+        type: String,
+        default: ""
+    },
+    param19_img: {
+        type: String,
+        default: ""
+    },
+    param19_link: {
+        type: String,
+        default: ""
+    },
+
+    param20_name: {
+        type: String,
+        default: ""
+    },
+    param20_desc: {
+        type: String,
+        default: ""
+    },
+    param20_img: {
+        type: String,
+        default: ""
+    },
+    param20_link: {
+        type: String,
+        default: ""
+    }
 });
 
 // Create the activity model
