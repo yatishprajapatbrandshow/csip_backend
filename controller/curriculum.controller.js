@@ -133,8 +133,12 @@ const getCurriculumDetails = async (req, res) => {
                 $group: {
                     _id: '$sid',  // Group by group SID
                     groupName: { $first: '$group_name' },  // Include group name
+                    groupindex: { $first: '$groupIndex' },  // Include group name
                     topics: { $push: '$topicDetails' }  // Accumulate topic details
                 }
+            },
+            {
+                $sort: { groupindex: 1 }  // Sort groups by groupIndex in ascending order (1 for ascending, -1 for descending)
             }
         ]);
 
@@ -156,7 +160,7 @@ const getCurriculumDetails = async (req, res) => {
         });
     }
 };
-    
+
 
 // choose Curriculum
 const chooseCurriculumn = async (req, res) => {
