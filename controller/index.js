@@ -6,6 +6,7 @@ const curriculumController = require('./curriculum.controller')
 const activityController = require('./activity.controller')
 const topicController = require('./topic.controller')
 const favouriteActivity = require('./favouriteActivity.controller')
+const recommendedActivityController = require('./recommendedActivity.controller')
 module.exports = {
     registerController,
     loginController,
@@ -14,5 +15,6 @@ module.exports = {
     curriculumController,
     activityController,
     topicController,
-    favouriteActivity
+    favouriteActivity,
+    recommendedActivityController
 }

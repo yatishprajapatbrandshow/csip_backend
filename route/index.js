@@ -6,6 +6,7 @@ const curriculumRouter = require('./curriculum.router')
 const activityRouter = require('./activity.router')
 const topicRouter = require('./topic.router')
 const favouriteActivityRouter = require('./favouriteActivity.router')
+const recommendedActivityRouter = require('./recommendedActivity.router')
 module.exports = {
     registerRouter,
     otpRouter,
@@ -14,5 +15,6 @@ module.exports = {
     curriculumRouter,
     activityRouter,
     topicRouter,
-    favouriteActivityRouter
+    favouriteActivityRouter,
+    recommendedActivityRouter
 }

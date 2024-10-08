@@ -16,7 +16,7 @@ app.get("/health", (req, res) => {
   res.status(200).send("OK");
 });
 
-const { activityRouter, topicRouter, loginRouter, registerRouter, curriculumRouter,favouriteActivityRouter,otpRouter } = require("./route");
+const { activityRouter, topicRouter, loginRouter, registerRouter, curriculumRouter,favouriteActivityRouter,otpRouter,recommendedActivityRouter } = require("./route");
 
 // Register Route
 app.use("/register", registerRouter);
@@ -35,6 +35,9 @@ app.use("/curriculum", curriculumRouter);
 
 // activity Routes
 app.use("/activity", activityRouter);
+
+// Recommended Activity Routes
+app.use("/recommended-activity", recommendedActivityRouter);
 
 // favourite activity Routes
 app.use("/favourite-activity", favouriteActivityRouter);
