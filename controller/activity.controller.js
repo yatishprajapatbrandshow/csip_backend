@@ -153,25 +153,31 @@ const updateActivity = async (req, res) => {
 
 // Get Activity
 const getActivities = async (req, res) => {
-    const { page = 1, limit = 10, corporate_id } = req.query; // Get page and limit from query params
+    const { page = 1, limit = 10, corporate_id, date } = req.query; // Get page, limit, corporate_id, and date from query params
+    
     const query = {
         status: 1,
-    }
+    };
+
     if (corporate_id) {
-        query.corporate_id = corporate_id
+        query.corporate_id = corporate_id;
     }
+
     const options = {
         page: parseInt(page, 10),
         limit: parseInt(limit, 10)
     };
 
     try {
-        const activities = await Activity.find(query)
-            .skip((options.page - 1) * options.limit) // Skip the number of documents based on page
-            .limit(options.limit) // Limit the number of documents returned
-            .sort({ createdAt: -1 }); // Optionally sort activities
+        // Define the default sort order, either by 'createdAt' or by 'activity_start_date' if 'date' is passed
+        const sortBy = date ? { activity_start_date: -1 } : { createdAt: -1 };
 
-        const totalActivities = await Activity.countDocuments(); // Get total count for pagination
+        const activities = await Activity.find(query)
+            .skip((options.page - 1) * options.limit) // Skip the number of documents based on the page
+            .limit(options.limit) // Limit the number of documents returned
+            .sort(sortBy); // Sort by createdAt by default or by date if provided
+
+        const totalActivities = await Activity.countDocuments(query); // Count documents that match the query
         const totalPages = Math.ceil(totalActivities / options.limit); // Calculate total pages
 
         res.status(200).json({
