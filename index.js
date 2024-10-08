@@ -16,7 +16,7 @@ app.get("/health", (req, res) => {
   res.status(200).send("OK");
 });
 
-const { activityRouter, topicRouter, loginRouter, registerRouter, curriculumRouter,favouriteActivityRouter,otpRouter,recommendedActivityRouter } = require("./route");
+const { activityRouter, topicRouter, loginRouter, registerRouter, curriculumRouter, favouriteActivityRouter, otpRouter, recommendedActivityRouter, collegeRouter } = require("./route");
 
 // Register Route
 app.use("/register", registerRouter);
@@ -44,6 +44,9 @@ app.use("/favourite-activity", favouriteActivityRouter);
 
 // topic Data Routes
 app.use("/topic", topicRouter);
+
+// College Routes
+app.use("/college", collegeRouter);
 
 // Start the server
 const port = process.env.PORT || 3001;
