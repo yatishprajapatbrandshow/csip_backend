@@ -4,7 +4,7 @@ const { Schema } = mongoose;
 // Define the schema for topics
 const topicSchema = new Schema({
     sid: { type: Number, required: true, unique: true },
-    participant_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Participant', required: true },
+    participant_id: { type: Number, required: true },
     topic: { type: String, required: true },
     major: { type: String, default: '' },
     tag: { type: String, default: '' },

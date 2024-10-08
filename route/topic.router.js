@@ -11,6 +11,6 @@ router.post("/", topicController.SearchTopics);
 router.post("/add", topicController.addTopics);
 
 // create Topic
-router.post("/create", topicController.createTopic);
+// router.post("/create", topicController.createTopic);
 
 module.exports = router;

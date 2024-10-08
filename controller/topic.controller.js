@@ -4,7 +4,7 @@ const { Topic, TopicMap } = require("../model"); // Import the Topic and TopicMa
 const SearchTopics = async (req, res) => {
   try {
     const { TopicSearch } = req.body;
-    
+
     // Validate input
     if (!TopicSearch) {
       return res.status(400).json({
@@ -47,6 +47,9 @@ const addTopics = async (req, res) => {
     const selectedTopics = req.body.TopicsList || [];
     const newTopic = req.body.TopicNew || "";
     const programName = req.body.program || "";
+    console.log(participantId);
+    console.log(selectedTopics);
+    console.log(newTopic);
 
     // If the request is to add a new topic
     if (newTopic) {
@@ -56,11 +59,13 @@ const addTopics = async (req, res) => {
       if (existingTopic) {
         return res.status(400).json({
           message: "A topic with the same name already exists. Choose from the existing topics.",
+          existingTopic
         });
       }
 
       // Generate a unique SID for the new topic
       const SIDTopic = await generateUniqueSid();
+      console.log(SIDTopic);
 
       // Create a new topic
       const newTopicDocument = new Topic({
@@ -73,9 +78,12 @@ const addTopics = async (req, res) => {
       });
 
       const savedTopic = await newTopicDocument.save();
+      console.log(savedTopic);
 
       // Add the newly created topic to the selected topics list
-      selectedTopics.push(savedTopic._id);
+      selectedTopics.push(savedTopic.sid.toString());
+      console.log(selectedTopics);
+
     }
 
     if (selectedTopics.length > 0) {
@@ -84,29 +92,35 @@ const addTopics = async (req, res) => {
 
       if (existingTopicMap) {
         // Update the existing topic map
-        existingTopicMap.topics = selectedTopics;
+        const existingTopics = existingTopicMap.topic_id.split(',');
+        const mergedUniqueTopics = [...new Set([...existingTopics, ...selectedTopics])];
+        const topicAdded = mergedUniqueTopics.join(',');
+        existingTopicMap.topic_id = topicAdded;
         existingTopicMap.program_name = programName;
         existingTopicMap.editedon = new Date();
-        await existingTopicMap.save();
+        const saved = await existingTopicMap.save();
 
         return res.status(200).json({
           message: "Topic mapping updated successfully",
+          data: saved
         });
       } else {
         // Create a new topic map
+        const topicAdded = selectedTopics.join(',');
         const newTopicMap = new TopicMap({
           sid: await generateUniqueSid(),
-          topic_id: savedTopic._id,
+          topic_id: topicAdded,
           participant_id: participantId,
           program_name: programName,
           addedby: "Participant",
           status: 1,
         });
 
-        await newTopicMap.save();
+        const saved = await newTopicMap.save();
 
         return res.status(201).json({
           message: "New topic mapped successfully",
+          data: saved
         });
       }
     } else {
@@ -114,6 +128,7 @@ const addTopics = async (req, res) => {
         message: "No topics selected",
       });
     }
+
   } catch (error) {
     console.error("Error in mapping topic to user:", error);
     return res.status(500).json({
@@ -124,119 +139,118 @@ const addTopics = async (req, res) => {
 // Remove Topics
 const removeTopics = async (req, res) => {
   try {
-      const participantId = req.body.participant_id;
-      const topicsToRemove = req.body.TopicsList || []; // Topics to remove
-      const programName = req.body.program || "";
+    const participantId = req.body.participant_id;
+    const topicsToRemove = req.body.TopicsList || []; // Topics to remove
+    const programName = req.body.program || "";
 
-      if (topicsToRemove.length === 0) {
-          return res.status(400).json({
-              message: "No topics selected for removal.",
-          });
-      }
-
-      // Find the existing topic map for the participant
-      const existingTopicMap = await TopicMap.findOne({ participant_id: participantId });
-
-      if (!existingTopicMap) {
-          return res.status(404).json({
-              message: "No topic mapping found for this participant.",
-          });
-      }
-
-      // Filter out topics to remove from the existing topic mapping
-      existingTopicMap.topics = existingTopicMap.topics.filter(
-          (topicId) => !topicsToRemove.includes(topicId)
-      );
-
-      // Update program name if provided
-      if (programName) {
-          existingTopicMap.program_name = programName;
-      }
-
-      await existingTopicMap.save(); // Save the changes
-
-      return res.status(200).json({
-          message: "Topics removed successfully",
-          remainingTopics: existingTopicMap.topics, // Optional: return the remaining topics
-      });
-  } catch (error) {
-      console.error("Error in removing topics from user:", error);
-      return res.status(500).json({
-          message: "An unexpected error occurred. Please try again later.",
-      });
-  }
-};
-// Function to add a new topic
-const createTopic = async (req, res) => {
-  try {
-    // Extract fields from the request body
-    const {
-      participant_id,
-      topic,
-      major,
-      tag,
-      program_name,
-      short_desc,
-      description,
-      image,
-    } = req.body;
-
-    // Validate required fields
-    const missingFields = []; // Array to hold missing fields
-    if (!participant_id) missingFields.push('participant_id');
-    if (!topic) missingFields.push('topic');
-    if (!major) missingFields.push('major');
-    if (!tag) missingFields.push('tag');
-    if (!program_name) missingFields.push('program_name');
-    if (!short_desc) missingFields.push('short_desc');
-    if (!description) missingFields.push('description');
-
-    if (missingFields.length > 0) {
+    if (topicsToRemove.length === 0) {
       return res.status(400).json({
-        status: false,
-        message: `Missing required fields: ${missingFields.join(', ')}.`,
-        data: false
+        message: "No topics selected for removal.",
       });
     }
 
-    const existingActivities = await Topic.find({}, 'sid'); // Fetch all existing sids
-    const existingIds = existingActivities.map(activity => activity.sid);
-    const sid = await generateUniqueSid(existingIds);
-    // Create a new topic instance
-    const newTopic = new Topic({
-      sid,
-      participant_id,
-      topic,
-      major,
-      tag,
-      program_name,
-      short_desc,
-      description,
-      image,
-      status: 1,
-      addedby: participant_id || 'admin', // Default to 'admin' if not provided
-      editedby: participant_id || 'admin'  // Default to 'admin' if not provided
-    });
+    // Find the existing topic map for the participant
+    const existingTopicMap = await TopicMap.findOne({ participant_id: participantId });
 
-    // Save the new topic to the database
-    const savedTopic = await newTopic.save();
+    if (!existingTopicMap) {
+      return res.status(404).json({
+        message: "No topic mapping found for this participant.",
+      });
+    }
 
-    // Respond with the created topic
-    res.status(201).json({
-      status: true,
-      message: 'Topic added successfully',
-      data: savedTopic
+    // Filter out topics to remove from the existing topic mapping
+    existingTopicMap.topics = existingTopicMap.topics.filter(
+      (topicId) => !topicsToRemove.includes(topicId)
+    );
+
+    // Update program name if provided
+    if (programName) {
+      existingTopicMap.program_name = programName;
+    }
+
+    await existingTopicMap.save(); // Save the changes
+
+    return res.status(200).json({
+      message: "Topics removed successfully",
+      remainingTopics: existingTopicMap.topics, // Optional: return the remaining topics
     });
   } catch (error) {
-    console.error("Error adding topic:", error); // Log the error for debugging
-    res.status(500).json({
-      status: false,
-      message: 'An error occurred while adding the topic.',
-      data: false
+    console.error("Error in removing topics from user:", error);
+    return res.status(500).json({
+      message: "An unexpected error occurred. Please try again later.",
     });
   }
 };
+// Function to add a new topic
+// const createTopic = async (req, res) => {
+//   try {
+//     // Extract fields from the request body
+//     const {
+//       participant_id,
+//       topic,
+//       major,
+//       tag,
+//       program_name,
+//       short_desc,
+//       description,
+//       image,
+//     } = req.body;
 
+//     // Validate required fields
+//     const missingFields = []; // Array to hold missing fields
+//     if (!participant_id) missingFields.push('participant_id');
+//     if (!topic) missingFields.push('topic');
+//     if (!major) missingFields.push('major');
+//     if (!tag) missingFields.push('tag');
+//     if (!program_name) missingFields.push('program_name');
+//     if (!short_desc) missingFields.push('short_desc');
+//     if (!description) missingFields.push('description');
+
+//     if (missingFields.length > 0) {
+//       return res.status(400).json({
+//         status: false,
+//         message: `Missing required fields: ${missingFields.join(', ')}.`,
+//         data: false
+//       });
+//     }
+
+//     const existingActivities = await Topic.find({}, 'sid'); // Fetch all existing sids
+//     const existingIds = existingActivities.map(activity => activity.sid);
+//     const sid = await generateUniqueSid(existingIds);
+//     // Create a new topic instance
+//     const newTopic = new Topic({
+//       sid,
+//       participant_id,
+//       topic,
+//       major,
+//       tag,
+//       program_name,
+//       short_desc,
+//       description,
+//       image,
+//       status: 1,
+//       addedby: participant_id || 'admin', // Default to 'admin' if not provided
+//       editedby: participant_id || 'admin'  // Default to 'admin' if not provided
+//     });
+
+//     // Save the new topic to the database
+//     const savedTopic = await newTopic.save();
+
+//     // Respond with the created topic
+//     res.status(201).json({
+//       status: true,
+//       message: 'Topic added successfully',
+//       data: savedTopic
+//     });
+//   } catch (error) {
+//     console.error("Error adding topic:", error); // Log the error for debugging
+//     res.status(500).json({
+//       status: false,
+//       message: 'An error occurred while adding the topic.',
+//       data: false
+//     });
+//   }
+// };
 // Helper function to generate a unique SID
 const generateUniqueSid = async () => {
   let sid;
@@ -254,6 +268,5 @@ const generateUniqueSid = async () => {
 module.exports = {
   SearchTopics,
   addTopics,
-  createTopic,
   removeTopics
 };
