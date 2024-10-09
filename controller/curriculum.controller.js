@@ -1,4 +1,5 @@
-const { Curriculum, CurriculumGroupMap, ParticipantCurriculumMap } = require('../model')
+const { Curriculum, CurriculumGroupMap, ParticipantCurriculumMap } = require('../model');
+const { userService } = require('../services');
 // Assuming the model is in a `models` folder
 const generateUniqueId = require('../utils/randomSidGenerate.util')
 
@@ -56,7 +57,6 @@ const getItems = async (req, res) => {
         if (name) {
             query.name = { $regex: name, $options: 'i' };  // Case-insensitive search by name
         }
-        console.log(query);
 
         // Fetch items with pagination
         const items = await Curriculum.find(query)
@@ -167,6 +167,24 @@ const chooseCurriculumn = async (req, res) => {
     try {
         const { participant_id, curriculum_id, college_id = 0 } = req.body;
 
+        const checkUserExits = await userService.checkIfExits(participant_id);
+
+        if (!checkUserExits) {
+            return res.status(404).json({
+                status: false,
+                message: "No User Exists with this id",
+                data: false
+            })
+        }
+
+        const exitingCurrilum = await Curriculum.findOne({ sid: curriculum_id, status: true })
+
+        if (!exitingCurrilum) {
+            return res.status(404).json({
+                status: false, message: "Data Not Found", data: false
+            });
+        }
+
         // Check if there are existing entries for this participant
         const existingCurriculums = await ParticipantCurriculumMap.find({ participant_id });
 
@@ -249,60 +267,6 @@ const getMappedCurriculums = async (req, res) => {
         });
     }
 };
-
-
-// Get a single item by SID
-// const getItemById = async (req, res) => {
-//     try {
-//         const { sid } = req.params;
-//         const item = await Item.findOne({ sid });
-
-//         if (!item) {
-//             return res.status(404).json({ error: 'Item not found' });
-//         }
-
-//         return res.status(200).json(item);
-//     } catch (error) {
-//         return res.status(500).json({ error: 'Failed to retrieve item', details: error.message });
-//     }
-// };
-
-// Update an item by SID
-// const updateItem = async (req, res) => {
-//     try {
-//         const { sid } = req.params;
-//         const updateData = req.body;
-
-//         // Find the item by SID and update it
-//         const updatedItem = await Item.findOneAndUpdate({ sid }, updateData, { new: true, runValidators: true });
-
-//         if (!updatedItem) {
-//             return res.status(404).json({ error: 'Item not found' });
-//         }
-
-//         return res.status(200).json(updatedItem);
-//     } catch (error) {
-//         return res.status(500).json({ error: 'Failed to update item', details: error.message });
-//     }
-// };
-
-// // Delete an item by SID (soft delete)
-// const deleteItem = async (req, res) => {
-//     try {
-//         const { sid } = req.params;
-
-//         // Soft delete by setting deleteflag to true
-//         const deletedItem = await Item.findOneAndUpdate({ sid }, { deleteflag: true }, { new: true });
-
-//         if (!deletedItem) {
-//             return res.status(404).json({ error: 'Item not found' });
-//         }
-
-//         return res.status(200).json({ message: 'Item soft deleted', item: deletedItem });
-//     } catch (error) {
-//         return res.status(500).json({ error: 'Failed to delete item', details: error.message });
-//     }
-// };
 
 module.exports = {
     createItem,

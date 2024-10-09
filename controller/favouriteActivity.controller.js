@@ -1,10 +1,27 @@
 const { FavouriteActivity } = require('../model');
+const { userService, activityService } = require('../services');
 const generateUniqueId = require('../utils/randomSidGenerate.util')
 
 const ToggleFavourite = async (req, res) => {
     try {
         const { activity_id, participant_id } = req.body;
 
+        const checkUserExits = await userService.checkIfExits(participant_id);
+        if (!checkUserExits) {
+            return res.status(404).json({
+                status: false,
+                message: "No User Exists with this id",
+                data: false
+            })
+        }
+        const activityExists = await activityService.checkActivityExists(activity_id);
+        if (!activityExists) {
+            return res.status(404).json({
+                status: false,
+                message: "Invalid Activity Id",
+                data: false
+            })
+        }
         // Check if an activity already exists with the given activity_id, participant_id, deleteflag=false
         const existing = await FavouriteActivity.findOne({
             activity_id,
@@ -53,10 +70,18 @@ const ToggleFavourite = async (req, res) => {
 const getAllFavouritesForUser = async (req, res) => {
     try {
         const { participant_id } = req.query;
-        if(!participant_id){
-            return res.status(400).json({ status: false, message: 'missing', data: false });
+        if (!participant_id) {
+            return res.status(400).json({ status: false, message: 'missing participant_id', data: false });
         }
+        const checkUserExits = await userService.checkIfExits(participant_id);
 
+        if (!checkUserExits) {
+            return res.status(404).json({
+                status: false,
+                message: "No User Exists with this id",
+                data: false
+            })
+        }
         // Find all favourite activities where status is true, deleteflag is false, and for the given participant
         const favourites = await FavouriteActivity.find({
             participant_id,

@@ -2,7 +2,7 @@ const { Registration } = require('../model')
 
 const checkIfExits = async (sid) => {
     try {
-        const check = await Registration.findOne({ sid: sid });
+        const check = await Registration.findOne({ sid: sid, status: 1 });
         if (check) {
             return true
         }
