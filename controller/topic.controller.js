@@ -44,12 +44,12 @@ const getTopics = async (req, res) => {
   try {
     const { participant_id } = req.body;
     console.log(participant_id);
-    
+
     // Find topics that match the search query (case insensitive)
     const existingTopicMap = await TopicMap.findOne({ participant_id: participant_id });
     console.log(existingTopicMap);
     const existingTopics = existingTopicMap.topic_id.split(',');
-    
+
     if (existingTopicMap) {
       const topics = await Topic.find({ sid: { $in: existingTopics } });
       if (topics.length > 0) {
@@ -200,10 +200,11 @@ const removeTopics = async (req, res) => {
     }
 
     // Filter out topics to remove from the existing topic mapping
-    existingTopicMap.topics = existingTopicMap.topics.filter(
+    const existingTopics = existingTopicMap.topic_id.split(',');
+    const filteredTopics = existingTopics.filter(
       (topicId) => !topicsToRemove.includes(topicId)
     );
-
+    existingTopicMap.topic_id = filteredTopics.join(',')
     // Update program name if provided
     if (programName) {
       existingTopicMap.program_name = programName;

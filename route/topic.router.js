@@ -12,6 +12,8 @@ router.post("/get", topicController.getTopics);
 
 // add topic
 router.post("/add", topicController.addTopics);
+// remove
+router.post("/remove", topicController.removeTopics);
 
 // create Topic
 // router.post("/create", topicController.createTopic);
