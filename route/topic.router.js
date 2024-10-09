@@ -7,6 +7,9 @@ const { topicController } = require("../controller");
 
 // get topic
 router.post("/", topicController.SearchTopics);
+// get topic
+router.post("/get", topicController.getTopics);
+
 // add topic
 router.post("/add", topicController.addTopics);
 

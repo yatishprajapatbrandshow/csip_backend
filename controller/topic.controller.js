@@ -3,7 +3,7 @@ const { Topic, TopicMap } = require("../model"); // Import the Topic and TopicMa
 // Search Topics
 const SearchTopics = async (req, res) => {
   try {
-    const { TopicSearch } = req.body;
+    const { TopicSearch, participant_id } = req.body;
 
     // Validate input
     if (!TopicSearch) {
@@ -30,6 +30,47 @@ const SearchTopics = async (req, res) => {
         data: [],
       });
     }
+  } catch (error) {
+    console.error("Error in handleSearchTopics:", error);
+    res.status(500).json({
+      status: false,
+      message: "An error occurred while searching for topics.",
+      data: null,
+    });
+  }
+};
+// Search Topics
+const getTopics = async (req, res) => {
+  try {
+    const { participant_id } = req.body;
+    console.log(participant_id);
+    
+    // Find topics that match the search query (case insensitive)
+    const existingTopicMap = await TopicMap.findOne({ participant_id: participant_id });
+    console.log(existingTopicMap);
+    const existingTopics = existingTopicMap.topic_id.split(',');
+    
+    if (existingTopicMap) {
+      const topics = await Topic.find({ sid: { $in: existingTopics } });
+      if (topics.length > 0) {
+        return res.json({
+          status: true,
+          message: "Topics found",
+          data: topics,
+        });
+      } else {
+        return res.status(404).json({
+          status: false,
+          message: "No topics found",
+          data: [],
+        });
+      }
+    }
+    return res.status(404).json({
+      status: false,
+      message: "No topics found",
+      data: [],
+    });
   } catch (error) {
     console.error("Error in handleSearchTopics:", error);
     res.status(500).json({
@@ -268,5 +309,6 @@ const generateUniqueSid = async () => {
 module.exports = {
   SearchTopics,
   addTopics,
-  removeTopics
+  removeTopics,
+  getTopics
 };
