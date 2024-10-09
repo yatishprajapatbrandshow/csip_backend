@@ -170,66 +170,67 @@ const updateUser = async (req, res) => {
         return res.status(500).json({ message: "An error occurred during the update process." });
     }
 };
-const getUser=async (req,res)=>{
-    try {
-        const { sid, name, email, mobile, } = req.body;
 
-        // Validate required fields
-        if (!sid) {
-            return res.status(400).json({ message: "Missing required fields. sid" });
-        }
+// const getUser=async (req,res)=>{
+//     try {
+//         const { sid, name, email, mobile, } = req.body;
 
-        // Validate password if provided
-        if (password) {
-            if (password.length < 5) {
-                return res.status(400).json({ message: "Password must be at least 5 characters long." });
-            }
+//         // Validate required fields
+//         if (!sid) {
+//             return res.status(400).json({ message: "Missing required fields. sid" });
+//         }
 
-            // Check if passwords match
-            if (password !== r_password) {
-                return res.status(400).json({ message: "Passwords do not match." });
-            }
-        }
+//         // Validate password if provided
+//         if (password) {
+//             if (password.length < 5) {
+//                 return res.status(400).json({ message: "Password must be at least 5 characters long." });
+//             }
 
-        // Find user by sid
-        const user = await Registration.findOne({ sid });
+//             // Check if passwords match
+//             if (password !== r_password) {
+//                 return res.status(400).json({ message: "Passwords do not match." });
+//             }
+//         }
 
-        if (!user) {
-            return res.status(404).json({ message: "User not found." });
-        }
+//         // Find user by sid
+//         const user = await Registration.findOne({ sid });
 
-        // Update user data
-        user.name = name || user.name;
-        user.email = email || user.email;
-        user.mobile = mobile || user.mobile;
-        user.dob = dob || user.dob;
-        user.gender = gender || user.gender;
-        user.city = city || user.city;
-        user.state = state || user.state;
-        user.pincode = pincode || user.pincode;
-        user.participantpic = participantpic || user.participantpic;
-        user.tshirtsize = tshirtsize || user.tshirtsize;
-        user.aadhar_number = aadhar_number || user.aadhar_number;
+//         if (!user) {
+//             return res.status(404).json({ message: "User not found." });
+//         }
 
-        // If password is provided, hash it and update
-        if (password) {
-            user.password = await bcrypt.hash(password, 10);
-        }
+//         // Update user data
+//         user.name = name || user.name;
+//         user.email = email || user.email;
+//         user.mobile = mobile || user.mobile;
+//         user.dob = dob || user.dob;
+//         user.gender = gender || user.gender;
+//         user.city = city || user.city;
+//         user.state = state || user.state;
+//         user.pincode = pincode || user.pincode;
+//         user.participantpic = participantpic || user.participantpic;
+//         user.tshirtsize = tshirtsize || user.tshirtsize;
+//         user.aadhar_number = aadhar_number || user.aadhar_number;
 
-        // Set 'edited_by' and update timestamps automatically
-        user.edited_by = req.user ? req.user.id : 0; // Assuming `req.user` contains logged-in user data
+//         // If password is provided, hash it and update
+//         if (password) {
+//             user.password = await bcrypt.hash(password, 10);
+//         }
 
-        // Save the updated user
-        const updatedUser = await user.save();
+//         // Set 'edited_by' and update timestamps automatically
+//         user.edited_by = req.user ? req.user.id : 0; // Assuming `req.user` contains logged-in user data
 
-        if (updatedUser) {
-            return res.status(200).json({ message: "User updated successfully.", user: updatedUser });
-        } else {
-            return res.status(500).json({ message: "Failed to update user." });
-        }
-    } catch (error) {
-        console.error("Error updating user: ", error);
-        return res.status(500).json({ message: "An error occurred during the update process." });
-    }
-}
+//         // Save the updated user
+//         const updatedUser = await user.save();
+
+//         if (updatedUser) {
+//             return res.status(200).json({ message: "User updated successfully.", user: updatedUser });
+//         } else {
+//             return res.status(500).json({ message: "Failed to update user." });
+//         }
+//     } catch (error) {
+//         console.error("Error updating user: ", error);
+//         return res.status(500).json({ message: "An error occurred during the update process." });
+//     }
+// }
 module.exports = { register, updateUser };

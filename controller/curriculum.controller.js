@@ -162,33 +162,51 @@ const getCurriculumDetails = async (req, res) => {
 };
 
 
-// choose Curriculum
 const chooseCurriculumn = async (req, res) => {
     try {
         const { participant_id, curriculum_id, college_id = 0 } = req.body;
 
-        const checkUserExits = await userService.checkIfExits(participant_id);
+        // Check if the participant exists
+        const checkUserExists = await userService.checkIfExits(participant_id);
 
-        if (!checkUserExits) {
+        if (!checkUserExists) {
             return res.status(404).json({
                 status: false,
                 message: "No User Exists with this id",
                 data: false
-            })
+            });
         }
 
-        const exitingCurrilum = await Curriculum.findOne({ sid: curriculum_id, status: true })
+        // Check if the specified curriculum exists and is active
+        const existingCurriculum = await Curriculum.findOne({ sid: curriculum_id, status: true });
 
-        if (!exitingCurrilum) {
+        if (!existingCurriculum) {
             return res.status(404).json({
-                status: false, message: "Data Not Found", data: false
+                status: false,
+                message: "No Curriculum Found",
+                data: false
+            });
+        }
+
+        // Check if the participant has already chosen this curriculum
+        const alreadyChosenCurriculum = await ParticipantCurriculumMap.findOne({
+            participant_id,
+            curriculum_id,
+            status: true // Ensure the status is active
+        });
+
+        if (alreadyChosenCurriculum) {
+            return res.status(400).json({
+                status: false,
+                message: "Curriculum has already been chosen by this participant.",
+                data: false
             });
         }
 
         // Check if there are existing entries for this participant
         const existingCurriculums = await ParticipantCurriculumMap.find({ participant_id });
 
-        // If there are previous entries, update their status to 0 (inactive)
+        // If there are previous entries, update their status to inactive (0)
         if (existingCurriculums.length > 0) {
             await ParticipantCurriculumMap.updateMany(
                 { participant_id },
@@ -196,22 +214,23 @@ const chooseCurriculumn = async (req, res) => {
             );
         }
 
-        const existingCurriculum = await ParticipantCurriculumMap.find({}, 'sid'); // Fetch all existing sids
-        const existingIds = existingCurriculum.map(Curriculum => Curriculum.sid);
-        const sid = await generateUniqueId(existingIds)
+        // Generate a new unique SID for the entry
+        const existingCurriculumEntries = await ParticipantCurriculumMap.find({}, 'sid'); // Fetch all existing SIDs
+        const existingIds = existingCurriculumEntries.map(curriculum => curriculum.sid);
+        const sid = await generateUniqueId(existingIds); // Assuming generateUniqueId is implemented
 
         // Create a new entry with status 1 (active)
         const newEntry = new ParticipantCurriculumMap({
             sid,                            // Random SID
-            participant_id: participant_id,  // Convert to ObjectId if needed
-            curriculum_id: curriculum_id,    // Convert to ObjectId if needed
-            college_id,                     // College ID
-            remark: '',                     // Remark (optional)
-            tag: [],                        // Tag (optional), you can change this if you need it
-            status: 1,                      // Status (1 means active)
-            addedby: 'Participant',         // Added by (who added the entry)
-            editedby: 'Participant',        // Edited by (who edited the entry, can change as per your logic)
-            deleteflag: false,              // Soft delete flag, defaults to false
+            participant_id,                // Convert to ObjectId if needed
+            curriculum_id,                 // Convert to ObjectId if needed
+            college_id,                    // College ID
+            remark: '',                    // Remark (optional)
+            tag: [],                       // Tag (optional)
+            status: 1,                     // Status (1 means active)
+            addedby: 'Participant',        // Added by (who added the entry)
+            editedby: 'Participant',       // Edited by (who edited the entry)
+            deleteflag: false,             // Soft delete flag, defaults to false
         });
 
         // Save the new entry to the database
@@ -221,7 +240,7 @@ const chooseCurriculumn = async (req, res) => {
         return res.status(201).json({
             status: true,
             message: "Curriculum chosen successfully",
-            data: newEntry // You can return the newly created entry if needed
+            data: newEntry // Return the newly created entry
         });
 
     } catch (error) {

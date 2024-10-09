@@ -1,15 +1,16 @@
-const ApiKey = require('./models/ApiKey'); // Import the ApiKey model
+const ApiKey = require('../model/ApiKey.model'); // Import the ApiKey model
 
 // Middleware function to validate API Key
-const validateApiKey = async (req, res, next) => {
+const auth = async (req, res, next) => {
     try {
         // Step 1: Get the API key from the request headers
-        const apiKey = req.body;
+        const { apiKey } = req.body;
 
         if (!apiKey) {
             return res.status(401).json({
                 status: false,
-                message: 'API Key is missing from the request headers.'
+                message: 'Missing Api Key',
+                data: false
             });
         }
 
@@ -19,7 +20,8 @@ const validateApiKey = async (req, res, next) => {
         if (!key) {
             return res.status(403).json({
                 status: false,
-                message: 'Invalid API key.'
+                message: 'Invalid API key.',
+                data: false
             });
         }
 
@@ -28,10 +30,10 @@ const validateApiKey = async (req, res, next) => {
     } catch (error) {
         return res.status(500).json({
             status: false,
-            message: 'An error occurred while validating the API key.',
-            error: error.message
+            message: 'An error occurred while validating the API key.' + error.message,
+            data: false
         });
     }
 };
 
-module.exports = validateApiKey;
+module.exports = auth;

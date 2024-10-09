@@ -1,5 +1,6 @@
 // index.js
 require("dotenv").config();
+const auth = require("./middlewares/Auth");
 const express = require("express");
 const db = require('./mongoConnection')
 const app = express();
@@ -18,6 +19,7 @@ app.get("/health", (req, res) => {
 
 const { activityRouter, topicRouter, loginRouter, registerRouter, curriculumRouter, favouriteActivityRouter, otpRouter, recommendedActivityRouter, collegeRouter } = require("./route");
 
+
 // Register Route
 app.use("/register", registerRouter);
 
@@ -25,28 +27,25 @@ app.use("/register", registerRouter);
 app.use("/login", loginRouter);
 
 // OTP Routes
-app.use("/otp", otpRouter);
-
-// User Data Routes
-// app.use("/user", userRouter);
+app.use("/otp", auth, otpRouter);
 
 // curriculum Data Routes
-app.use("/curriculum", curriculumRouter);
+app.use("/curriculum", auth, curriculumRouter);
 
 // activity Routes
-app.use("/activity", activityRouter);
+app.use("/activity", auth, activityRouter);
 
 // Recommended Activity Routes
-app.use("/recommended-activity", recommendedActivityRouter);
+app.use("/recommended-activity", auth, recommendedActivityRouter);
 
 // favourite activity Routes
-app.use("/favourite-activity", favouriteActivityRouter);
+app.use("/favourite-activity",auth, favouriteActivityRouter);
 
 // topic Data Routes
-app.use("/topic", topicRouter);
+app.use("/topic",auth, topicRouter);
 
 // College Routes
-app.use("/college", collegeRouter);
+app.use("/college",auth, collegeRouter);
 
 // College Routes
 // app.use("/dashboardInfo", dashboardRouter);
