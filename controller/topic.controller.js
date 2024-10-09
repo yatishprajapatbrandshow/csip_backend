@@ -205,10 +205,6 @@ const removeTopics = async (req, res) => {
       (topicId) => !topicsToRemove.includes(topicId)
     );
     existingTopicMap.topic_id = filteredTopics.join(',')
-    // Update program name if provided
-    if (programName) {
-      existingTopicMap.program_name = programName;
-    }
 
     await existingTopicMap.save(); // Save the changes
 
