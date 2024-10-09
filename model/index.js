@@ -7,6 +7,7 @@ const CurriculumGroupMap = require('./CurriculumGroupMap.model')
 const ParticipantCurriculumMap = require('./ParticipantCurriculumMap.model')
 const FavouriteActivity = require('./FavouriteActivity.model')
 const College = require('./College.model')
+const ActivityMap = require('./ActivityMap.model')
 module.exports = {
     Activity,
     Topic,
@@ -16,5 +17,6 @@ module.exports = {
     CurriculumGroupMap,
     ParticipantCurriculumMap,
     FavouriteActivity,
-    College
+    College,
+    ActivityMap
 }

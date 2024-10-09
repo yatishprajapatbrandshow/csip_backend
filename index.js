@@ -48,6 +48,9 @@ app.use("/topic", topicRouter);
 // College Routes
 app.use("/college", collegeRouter);
 
+// College Routes
+// app.use("/dashboardInfo", dashboardRouter);
+
 // Start the server
 const port = process.env.PORT || 3001;
 app.listen(port, () => {

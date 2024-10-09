@@ -1,16 +1,16 @@
 const { Topic, TopicMap } = require("../model"); // Import the Topic and TopicMap models
-
+const { userService } = require('../services');
 // Search Topics
 const SearchTopics = async (req, res) => {
   try {
-    const { TopicSearch, participant_id } = req.body;
+    const { TopicSearch } = req.body;
 
     // Validate input
     if (!TopicSearch) {
       return res.status(400).json({
         status: false,
         message: "TopicSearch is required.",
-        data: null,
+        data: false,
       });
     }
 
@@ -18,7 +18,7 @@ const SearchTopics = async (req, res) => {
     const topics = await Topic.find({ topic: new RegExp(TopicSearch, 'i') }).limit(10);
 
     if (topics.length > 0) {
-      return res.json({
+      return res.status(404).json({
         status: true,
         message: "Topics found",
         data: topics,
@@ -27,7 +27,7 @@ const SearchTopics = async (req, res) => {
       return res.status(404).json({
         status: false,
         message: "No topics found",
-        data: [],
+        data: false,
       });
     }
   } catch (error) {
@@ -35,7 +35,7 @@ const SearchTopics = async (req, res) => {
     res.status(500).json({
       status: false,
       message: "An error occurred while searching for topics.",
-      data: null,
+      data: false,
     });
   }
 };
@@ -43,17 +43,25 @@ const SearchTopics = async (req, res) => {
 const getTopics = async (req, res) => {
   try {
     const { participant_id } = req.body;
-    console.log(participant_id);
+
+    const checkUserExits = await userService.checkIfExits(participant_id);
+
+    if (!checkUserExits) {
+      return res.status(404).json({
+        status: false,
+        message: "No User Exists with this id",
+        data: false
+      })
+    }
 
     // Find topics that match the search query (case insensitive)
     const existingTopicMap = await TopicMap.findOne({ participant_id: participant_id });
-    console.log(existingTopicMap);
     const existingTopics = existingTopicMap.topic_id.split(',');
 
     if (existingTopicMap) {
       const topics = await Topic.find({ sid: { $in: existingTopics } });
       if (topics.length > 0) {
-        return res.json({
+        return res.status(200).json({
           status: true,
           message: "Topics found",
           data: topics,
@@ -62,21 +70,21 @@ const getTopics = async (req, res) => {
         return res.status(404).json({
           status: false,
           message: "No topics found",
-          data: [],
+          data: false,
         });
       }
     }
     return res.status(404).json({
       status: false,
       message: "No topics found",
-      data: [],
+      data: false,
     });
   } catch (error) {
     console.error("Error in handleSearchTopics:", error);
     res.status(500).json({
       status: false,
       message: "An error occurred while searching for topics.",
-      data: null,
+      data: false,
     });
   }
 };
@@ -86,28 +94,41 @@ const addTopics = async (req, res) => {
   try {
     const participantId = req.body.participant_id;
     const selectedTopics = req.body.TopicsList || [];
-    const newTopic = req.body.TopicNew || "";
+    const newTopic = req.body.TopicNew;
     const programName = req.body.program || "";
-    console.log(participantId);
-    console.log(selectedTopics);
-    console.log(newTopic);
+
+    const checkUserExits = await userService.checkIfExits(participantId);
+
+    if (!checkUserExits) {
+      return res.status(404).json({
+        status: false,
+        message: "No User Exists with this id",
+        data: false
+      })
+    }
 
     // If the request is to add a new topic
     if (newTopic) {
+      if (newTopic === "") {
+        return res.status(400).json({
+          status: false,
+          message: "New Topic is required",
+          data: false
+        })
+      }
       // Check if the topic already exists
       const existingTopic = await Topic.findOne({ topic: newTopic });
 
       if (existingTopic) {
         return res.status(400).json({
+          status: false,
           message: "A topic with the same name already exists. Choose from the existing topics.",
-          existingTopic
+          data: existingTopic
         });
       }
 
       // Generate a unique SID for the new topic
       const SIDTopic = await generateUniqueSid();
-      console.log(SIDTopic);
-
       // Create a new topic
       const newTopicDocument = new Topic({
         sid: SIDTopic,
@@ -119,29 +140,40 @@ const addTopics = async (req, res) => {
       });
 
       const savedTopic = await newTopicDocument.save();
-      console.log(savedTopic);
 
       // Add the newly created topic to the selected topics list
       selectedTopics.push(savedTopic.sid.toString());
-      console.log(selectedTopics);
-
     }
 
     if (selectedTopics.length > 0) {
+      // Step 1: Convert selectedTopics (strings) to numbers
+      const topicNumbers = selectedTopics.map(topic => Number(topic));
+
+      // Step 2: Fetch all valid topics from the database where topic_id is in the list of topicNumbers
+      const validTopics = await Topic.find({ sid: { $in: topicNumbers } });
+
+      // Step 3: Extract the valid topic IDs as numbers
+      const validTopicIds = validTopics.map(topic => topic.sid.toString());
+
+      // Step 4: Find non-existing topics by comparing the original `selectedTopics` with the `validTopicIds`
+      const nonExistingTopics = topicNumbers.filter(topic => !validTopicIds.includes(topic));
+
       // Check if the participant already has mapped topics
       const existingTopicMap = await TopicMap.findOne({ participant_id: participantId });
-
       if (existingTopicMap) {
         // Update the existing topic map
         const existingTopics = existingTopicMap.topic_id.split(',');
-        const mergedUniqueTopics = [...new Set([...existingTopics, ...selectedTopics])];
+        // unique ids
+        const mergedUniqueTopics = [...new Set([...existingTopics, ...validTopicIds])];
         const topicAdded = mergedUniqueTopics.join(',');
+        // update
         existingTopicMap.topic_id = topicAdded;
         existingTopicMap.program_name = programName;
         existingTopicMap.editedon = new Date();
         const saved = await existingTopicMap.save();
 
         return res.status(200).json({
+          status: true,
           message: "Topic mapping updated successfully",
           data: saved
         });
@@ -160,20 +192,25 @@ const addTopics = async (req, res) => {
         const saved = await newTopicMap.save();
 
         return res.status(201).json({
+          status: true,
           message: "New topic mapped successfully",
           data: saved
         });
       }
     } else {
       return res.status(400).json({
+        status: false,
         message: "No topics selected",
+        data: false
       });
     }
 
   } catch (error) {
     console.error("Error in mapping topic to user:", error);
     return res.status(500).json({
+      status: false,
       message: "An unexpected error occurred. Please try again later.",
+      data: false,
     });
   }
 };
@@ -182,25 +219,53 @@ const removeTopics = async (req, res) => {
   try {
     const participantId = req.body.participant_id;
     const topicsToRemove = req.body.TopicsList || []; // Topics to remove
-    const programName = req.body.program || "";
+
+    const checkUserExits = await userService.checkIfExits(participantId);
+
+    if (!checkUserExits) {
+      return res.status(404).json({
+        status: false,
+        message: "No User Exists with this id",
+        data: false
+      })
+    }
 
     if (topicsToRemove.length === 0) {
       return res.status(400).json({
+        status: false,
         message: "No topics selected for removal.",
+        data: false,
       });
     }
 
     // Find the existing topic map for the participant
     const existingTopicMap = await TopicMap.findOne({ participant_id: participantId });
 
+
+
     if (!existingTopicMap) {
       return res.status(404).json({
+        status: false,
         message: "No topic mapping found for this participant.",
+        data: false,
       });
     }
 
     // Filter out topics to remove from the existing topic mapping
     const existingTopics = existingTopicMap.topic_id.split(',');
+    // Step 2: Check if all topics to remove exist in the current topic mapping
+    const nonExistentTopics = topicsToRemove.filter(
+      (topicId) => !existingTopics.includes(topicId)
+    );
+
+    if (nonExistentTopics.length > 0) {
+      // Step 3: If there are topics that do not exist in the mapping, return an error response
+      return res.status(400).json({
+        status: false,
+        message: "Topics are not added",
+        data: nonExistentTopics, // Return the non-existent topics
+      });
+    }
     const filteredTopics = existingTopics.filter(
       (topicId) => !topicsToRemove.includes(topicId)
     );
@@ -209,13 +274,16 @@ const removeTopics = async (req, res) => {
     await existingTopicMap.save(); // Save the changes
 
     return res.status(200).json({
+      status: true,
       message: "Topics removed successfully",
-      remainingTopics: existingTopicMap.topics, // Optional: return the remaining topics
+      data: existingTopicMap, // Optional: return the remaining topics
     });
   } catch (error) {
     console.error("Error in removing topics from user:", error);
     return res.status(500).json({
+      status: false,
       message: "An unexpected error occurred. Please try again later.",
+      data: false,
     });
   }
 };

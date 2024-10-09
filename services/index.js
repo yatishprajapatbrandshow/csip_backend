@@ -1,6 +1,6 @@
 const otpServices = require('./otp.service')
-const userServices =require('./user.services')
+const userService =require('./user.service')
 module.exports = {
     otpServices,
-    userServices
+    userService
 }

@@ -32,7 +32,7 @@ const addActivity = async (req, res) => {
             });
         }
 
-        // Generate a unique sid
+        // Generate a unique sid    
         const existingActivities = await Activity.find({}, 'sid'); // Fetch all existing sids
         const existingIds = existingActivities.map(activity => activity.sid);
         const sid = await generateUniqueId(existingIds);
@@ -150,11 +150,10 @@ const updateActivity = async (req, res) => {
         });
     }
 };
-
 // Get Activity
 const getActivities = async (req, res) => {
     const { page = 1, limit = 10, corporate_id, date } = req.query; // Get page, limit, corporate_id, and date from query params
-    
+
     const query = {
         status: 1,
     };
@@ -229,5 +228,6 @@ function formatDate(date) {
 module.exports = {
     addActivity,
     getActivities,
-    updateActivity
+    updateActivity,
+    // chooseActivitiy
 };

@@ -16,4 +16,8 @@ router.get("/list", activityController.getActivities);
 router.post("/step", activityController.updateActivity);
 
 
+// update
+// router.post("/choose", activityController.chooseActivitiy);
+
+
 module.exports = router;
