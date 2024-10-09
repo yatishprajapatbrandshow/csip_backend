@@ -1,4 +1,5 @@
-const { Activity } = require('../model')
+const { Activity, ActivityMap } = require('../model');
+const { activityService, userService } = require('../services');
 const steps = {
     2: ["case_scenario", "case_scenario_title", "description", "note"],
     3: ["corporate_hierarchy_overview", "corporate_id", "tag", "topic_id"],
@@ -202,6 +203,79 @@ const getActivities = async (req, res) => {
     }
 };
 
+const applyActivity = async (req, res) => {
+    try {
+        const {
+            participantId,  // Participant's ID
+            activityId,     // Activity's ID
+        } = req.body;
+
+        // Validate required fields
+        const missingFields = []; // Array to hold missing fields
+        if (!participantId || participantId == "") missingFields.push('participantId');
+        if (!activityId || activityId == "") missingFields.push('activityId');
+
+        if (missingFields.length > 0) {
+            return res.status(400).json({
+                status: false,
+                message: `Missing required fields: ${missingFields.join(', ')}.`,
+                data: false
+            });
+        }
+
+        const checkUserExits = await userService.checkIfExits(participantId);
+        if (!checkUserExits) {
+            return res.status(404).json({
+                status: false,
+                message: "No User Exists with this id",
+                data: false
+            })
+        }
+        const activityExists = await activityService.checkActivityExists(activityId);
+        if (!activityExists) {
+            return res.status(404).json({
+                status: false,
+                message: "Invalid Activity Id",
+                data: false
+            })
+        }
+        const { topic_id } = await Activity.findOne({ sid: activityId, status: 1 });
+
+        // Generate a unique sid    
+        const existingActivityMaps = await ActivityMap.find({}, 'sid');
+        const existingIds = existingActivityMaps.map(activityMap => activityMap.sid);
+        const sid = await generateUniqueId(existingIds);
+
+        // Create new activity map document
+        const newActivityMap = new ActivityMap({
+            sid,
+            participantid: participantId,
+            activityid: activityId,
+            topicId: topic_id,
+            addedOn: new Date(),
+            deleteflag: false
+        });
+
+        // Save the new activity map to the database
+        const savedActivityMap = await newActivityMap.save();
+
+        // Send success response
+        res.status(201).json({
+            status: true,
+            message: 'Activity mapped successfully',
+            data: { id: savedActivityMap._id, sid }
+        });
+    } catch (error) {
+        console.error('Error applying activity:', error); // Log the error for debugging
+        res.status(500).json({
+            status: false,
+            message: error.message,
+            data: false
+        });
+    }
+};
+
+
 // Generate unique ID function
 const generateUniqueId = async (existingIds) => {
     let id;
@@ -231,5 +305,5 @@ module.exports = {
     addActivity,
     getActivities,
     updateActivity,
-    // chooseActivitiy
+    applyActivity
 };

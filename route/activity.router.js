@@ -17,7 +17,7 @@ router.post("/step", activityController.updateActivity);
 
 
 // update
-// router.post("/choose", activityController.chooseActivitiy);
+router.post("/apply", activityController.applyActivity);
 
 
 module.exports = router;

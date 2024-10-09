@@ -8,40 +8,38 @@ const ActivityMapSchema = new Schema({
         type: String,
         required: true
     },
-    participantId: {  // Assuming participantId is the correct casing, but you can change it
-        type: String,
+    participantid: {  // Assuming participantId is the correct casing, but you can change it
+        type: Number,
         required: true
     },
-    activityId: {
-        type: String,
+    activityid: {
+        type: Number,
         required: true
     },
     topicId: {  // Assuming topicId is the correct casing
-        type: String,
+        type: Number,
         required: true
     },
     paymentStatus: {
         type: String,
-        enum: ['pending', 'completed', 'failed'],  // You can define valid statuses here
-        required: true
+        enum: ['success', 'pending', 'failed'],  // You can define valid statuses here
+      
     },
     paymentMode: {
         type: String,
-        enum: ['card', 'netbanking', 'wallet', 'UPI'],  // Define available payment modes here
-        required: true
+        enum: ['card', 'netbanking', 'wallet', 'upi'],  // Define available payment modes here
+     
     },
     referenceNo: {
         type: String,
-        required: true
+     
     },
     razorpayId: {
         type: String,
-        required: true
     },
     status: {
-        type: String,
-        enum: ['active', 'inactive'],
-        default: 'active'
+        type: Boolean,
+        default: true
     },
     addedOn: {
         type: Date,
@@ -49,7 +47,6 @@ const ActivityMapSchema = new Schema({
     },
     addedBy: {
         type: String,
-        required: true
     },
     editedOn: {
         type: Date

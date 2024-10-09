@@ -1,6 +1,6 @@
 // index.js
 require("dotenv").config();
-const auth = require("./middlewares/Auth");
+cons = require("./middlewares/Auth");
 const express = require("express");
 const db = require('./mongoConnection')
 const app = express();
@@ -17,7 +17,7 @@ app.get("/health", (req, res) => {
   res.status(200).send("OK");
 });
 
-const { activityRouter, topicRouter, loginRouter, registerRouter, curriculumRouter, favouriteActivityRouter, otpRouter, recommendedActivityRouter, collegeRouter } = require("./route");
+const { activityRouter, topicRouter, loginRouter, registerRouter, curriculumRouter, favouriteActivityRouter, otpRouter, recommendedActivityRouter, collegeRouter, dashboardRouter } = require("./route");
 
 // Register Route
 app.use("/register", registerRouter);
@@ -26,28 +26,28 @@ app.use("/register", registerRouter);
 app.use("/login", loginRouter);
 
 // OTP Routes
-app.use("/otp", auth, otpRouter);
+app.use("/otp", otpRouter);
 
 // curriculum Data Routes
-app.use("/curriculum", auth, curriculumRouter);
+app.use("/curriculum", curriculumRouter);
 
 // activity Routes
-app.use("/activity", auth, activityRouter);
+app.use("/activity", activityRouter);
 
 // Recommended Activity Routes
-app.use("/recommended-activity", auth, recommendedActivityRouter);
+app.use("/recommended-activity", recommendedActivityRouter);
 
 // favourite activity Routes
-app.use("/favourite-activity", auth, favouriteActivityRouter);
+app.use("/favourite-activity", favouriteActivityRouter);
 
 // topic Data Routes
-app.use("/topic", auth, topicRouter);
+app.use("/topic", topicRouter);
 
 // College Routes
-app.use("/college", auth, collegeRouter);
+app.use("/college", collegeRouter);
 
 // College Routes
-// app.use("/dashboardInfo", dashboardRouter);
+app.use("/dashboardInfo", dashboardRouter);
 
 // Start the server
 const port = process.env.PORT || 3001;
