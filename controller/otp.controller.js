@@ -5,7 +5,7 @@ const sendOTP = async (req, res) => {
     const { mobile } = req.body;
 
     // Validate input
-    if (!mobile) {
+    if (!mobile || mobile == "") {
         return res.status(400).json({ status: false, message: 'Mobile number is required.', data: false });
     }
 

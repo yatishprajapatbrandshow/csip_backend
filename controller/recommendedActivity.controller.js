@@ -3,8 +3,16 @@ const { Activity, TopicMap } = require('../model')
 
 const getReconmendedActivity = async (req, res) => {
     try {
-        const { participant_id = "" } = req.query;
+        const { participant_id } = req.query;
 
+        const checkUserExits = await userService.checkIfExits(participant_id);
+        if (!checkUserExits) {
+            return res.status(404).json({
+                status: false,
+                message: "No User Exists with this id",
+                data: false
+            })
+        }
         const topics = await TopicMap.find({ participant_id, status: 1 });
 
         if (!topics || topics.length === 0) {
