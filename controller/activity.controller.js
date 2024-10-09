@@ -46,7 +46,7 @@ const addActivity = async (req, res) => {
             short_desc,
             addedon: formatDate(new Date()),
             editedon: formatDate(new Date()),
-            status: 1,
+            status: 0,
             deleteflage: 0
         });
 
@@ -131,7 +131,9 @@ const updateActivity = async (req, res) => {
 
         // Set the edited timestamp
         activity.editedon = formatDate(new Date());
-
+        if (step === 7) {
+            activity.status = 1;
+        }
         // Save the updated activity
         const updatedActivity = await activity.save();
 

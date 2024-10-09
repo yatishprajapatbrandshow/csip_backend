@@ -19,7 +19,6 @@ app.get("/health", (req, res) => {
 
 const { activityRouter, topicRouter, loginRouter, registerRouter, curriculumRouter, favouriteActivityRouter, otpRouter, recommendedActivityRouter, collegeRouter } = require("./route");
 
-
 // Register Route
 app.use("/register", registerRouter);
 
@@ -39,13 +38,13 @@ app.use("/activity", auth, activityRouter);
 app.use("/recommended-activity", auth, recommendedActivityRouter);
 
 // favourite activity Routes
-app.use("/favourite-activity",auth, favouriteActivityRouter);
+app.use("/favourite-activity", auth, favouriteActivityRouter);
 
 // topic Data Routes
-app.use("/topic",auth, topicRouter);
+app.use("/topic", auth, topicRouter);
 
 // College Routes
-app.use("/college",auth, collegeRouter);
+app.use("/college", auth, collegeRouter);
 
 // College Routes
 // app.use("/dashboardInfo", dashboardRouter);
