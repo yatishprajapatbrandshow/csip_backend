@@ -238,7 +238,16 @@ const chooseCurriculumn = async (req, res) => {
 const getMappedCurriculums = async (req, res) => {
     try {
         const { participant_id } = req.query; // Get participant_id from the URL params
-        
+
+        const checkUserExits = await userService.checkIfExits(participant_id);
+
+        if (!checkUserExits) {
+            return res.status(404).json({
+                status: false,
+                message: "No User Exists with this id",
+                data: false
+            })
+        }
 
         // Fetch mapped curriculums for the given participant
         const mappedCurriculums = await ParticipantCurriculumMap.find({ participant_id: participant_id, status: true, deleteflag: false });
