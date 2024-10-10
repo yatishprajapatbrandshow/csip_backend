@@ -9,6 +9,7 @@ const favouriteActivityRouter = require('./favouriteActivity.router')
 const recommendedActivityRouter = require('./recommendedActivity.router')
 const collegeRouter = require('./college.router')
 const dashboardRouter = require('./dashboard.router')
+const paymentRouter = require('./payment.router')
 module.exports = {
     registerRouter,
     otpRouter,
@@ -20,5 +21,6 @@ module.exports = {
     favouriteActivityRouter,
     recommendedActivityRouter,
     collegeRouter,
-    dashboardRouter
+    dashboardRouter,
+    paymentRouter
 }
