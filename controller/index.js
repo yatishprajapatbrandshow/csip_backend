@@ -10,6 +10,7 @@ const recommendedActivityController = require('./recommendedActivity.controller'
 const collegeController = require('./college.controller')
 const dashboardController = require('./dashboard.controller')
 const paymentController = require('./Payment.controller')
+const commentController = require('./comment.controller')
 module.exports = {
     registerController,
     loginController,
@@ -22,5 +23,6 @@ module.exports = {
     recommendedActivityController,
     collegeController,
     dashboardController,
-    paymentController
+    paymentController,
+    commentController
 }
