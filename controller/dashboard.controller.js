@@ -50,7 +50,7 @@ const getData = async (req, res) => {
                 activityApplied: activities.length === 0 ? false : activities,
                 paymentPending: activitiesPaymentPending.length === 0 ? false : activitiesPaymentPending,
                 submissionPending: false,
-                ongoingActivities: ongoingActivities.length === 0 ? false : ongoingActivities,
+                ongoingActivities: false,
                 completedActivities: false,
                 totalScore: false
             }
