@@ -5,6 +5,7 @@ const { userService } = require('../services');
 const getReconmendedActivity = async (req, res) => {
     try {
         const { participant_id } = req.query;
+        console.log(participant_id);
 
         const checkUserExits = await userService.checkIfExits(participant_id);
         if (!checkUserExits) {
@@ -33,24 +34,30 @@ const getReconmendedActivity = async (req, res) => {
                 data: false
             })
         }
+        const topicNumbers = topic_idsArray.filter(topic => Number(topic) !== 0).map(ele => Number(ele));
+        if (topicNumbers.length > 0) {
+            // Find activities where topic_id is in the topic_idsArray
+            const activities = await Activity.find({ topic_id: { $in: topicNumbers }, status: 1 }); // Optional: Add a status filter if necessary
 
-        // Find activities where topic_id is in the topic_idsArray
-        const activities = await Activity.find({ topic_id: { $in: topic_idsArray }, status: 1 }); // Optional: Add a status filter if necessary
-
-        // If no activities found for the given topics
-        if (!activities || activities.length === 0) {
-            return res.status(404).json({
-                status: false,
-                message: "No activities found",
-                data: false
+            // If no activities found for the given topics
+            if (!activities || activities.length === 0) {
+                return res.status(404).json({
+                    status: false,
+                    message: "No activities found",
+                    data: false
+                });
+            }
+            // Return the matching activities
+            return res.status(200).json({
+                status: true,
+                message: "Recommended activities retrieved successfully",
+                data: activities
             });
         }
-
-        // Return the matching activities
-        res.status(200).json({
-            status: true,
-            message: "Recommended activities retrieved successfully",
-            data: activities
+        return res.status(404).json({
+            status: false,
+            message: "No activities found",
+            data: false
         });
 
     } catch (error) {

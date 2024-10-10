@@ -203,6 +203,60 @@ const getActivities = async (req, res) => {
     }
 };
 
+const appliedActivity = async (req, res) => {
+    try {
+        const {
+            participantId
+        } = req.query;
+
+        // Validate required fields
+        const missingFields = []; // Array to hold missing fields
+        if (!participantId || participantId == "") missingFields.push('participantId');
+
+        if (missingFields.length > 0) {
+            return res.status(400).json({
+                status: false,
+                message: `Missing required fields: ${missingFields.join(', ')}.`,
+                data: false
+            });
+        }
+
+        const checkUserExits = await userService.checkIfExits(participantId);
+        if (!checkUserExits) {
+            return res.status(404).json({
+                status: false,
+                message: "No User Exists with this id",
+                data: false
+            })
+        }
+        // Activities maped
+        const activityApplied = await ActivityMap.find({ participantid: participantId, status: 'Active' });
+        const activityIds = activityApplied.map(activity => activity.activityid);
+        const activities = await Activity.find({ sid: { $in: activityIds }, status: 1 });
+
+        if (!activities || activities.length === 0) {
+            return res.status.json({
+                status: false,
+                message: 'No Data Found',
+                data: false
+            })
+        }
+        // Send success response
+        res.status(200).json({
+            status: true,
+            message: 'Applied Activity Retrived successfully',
+            data: activities
+        });
+
+    } catch (error) {
+        console.error('Error applying activity:', error); // Log the error for debugging
+        res.status(500).json({
+            status: false,
+            message: error.message,
+            data: false
+        });
+    }
+};
 const applyActivity = async (req, res) => {
     try {
         const {
@@ -294,6 +348,8 @@ const generateUniqueId = async (existingIds) => {
     } while (existingIds.includes(id)); // Ensure the ID is unique
     return id;
 };
+
+
 // Format date function
 function formatDate(date) {
     if (!(date instanceof Date) || isNaN(date)) {
@@ -314,5 +370,6 @@ module.exports = {
     addActivity,
     getActivities,
     updateActivity,
-    applyActivity
+    applyActivity,
+    appliedActivity
 };

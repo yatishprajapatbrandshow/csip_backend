@@ -16,8 +16,10 @@ router.get("/list", activityController.getActivities);
 router.post("/step", activityController.updateActivity);
 
 
-// update
+// Apply
 router.post("/apply", activityController.applyActivity);
+
+router.get("/applied", activityController.appliedActivity);
 
 
 module.exports = router;
