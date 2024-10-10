@@ -1,4 +1,4 @@
-const { Comments } = require('../model'); // Import the Comment model
+const { Comments, Registration } = require('../model'); // Import the Comment model
 const { userService } = require('../services');
 
 const getComments = async (req, res) => {
@@ -14,10 +14,17 @@ const getComments = async (req, res) => {
                 data: false
             })
         }
-        
-        const comments = await Comments.find({ commentto: participant_id, status: true });
 
-        if (!comments || comments.length === 0) {
+        const comments = await Comments.find({ commentto: participant_id, status: true });
+        const responseData = await Promise.all(
+            comments.map(async (ele) => {
+                const userData = await Registration.find({ sid: ele.commentby, status: 1 }); // Use commentby to match sid
+                return { comment: ele, registration: userData[0] };
+            })
+        );
+        console.log(responseData);
+
+        if (!responseData || responseData.length === 0) {
             return res.status(404).json({
                 status: false,
                 message: "No Comment Found ",
@@ -27,7 +34,7 @@ const getComments = async (req, res) => {
         return res.status(200).json({
             status: true,
             message: "Comment Retrived Successfully ",
-            data: comments
+            data: responseData
         })
     } catch (error) {
         // Handle errors (e.g., validation errors, database errors)
