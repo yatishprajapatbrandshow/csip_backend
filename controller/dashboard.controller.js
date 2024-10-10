@@ -4,7 +4,8 @@ const { userService } = require('../services');
 const getData = async (req, res) => {
     try {
         const { participant_id } = req.query;
-
+        console.log(participant_id);
+        
         const checkUserExits = await userService.checkIfExits(participant_id);
         let topicStudying;
         if (!checkUserExits) {

@@ -219,7 +219,7 @@ const removeTopics = async (req, res) => {
   try {
     const participantId = req.body.participant_id;
     const topicsToRemove = req.body.TopicsList || []; // Topics to remove
-
+  
     const checkUserExits = await userService.checkIfExits(participantId);
 
     if (!checkUserExits) {

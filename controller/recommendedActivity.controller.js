@@ -1,4 +1,5 @@
-const { Activity, TopicMap } = require('../model')
+const { Activity, TopicMap } = require('../model');
+const { userService } = require('../services');
 
 
 const getReconmendedActivity = async (req, res) => {
@@ -54,7 +55,7 @@ const getReconmendedActivity = async (req, res) => {
 
     } catch (error) {
         // Handle any errors during the process
-        console.error('Error toggling favourite:', error);
+        console.error('Error To get Recomended Activity', error);
         res.status(500).json({ status: false, message: 'Failed To Favourite Activity', data: false });
     }
 }
