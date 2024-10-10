@@ -18,7 +18,7 @@ const SearchTopics = async (req, res) => {
     const topics = await Topic.find({ topic: new RegExp(TopicSearch, 'i') }).limit(10);
 
     if (topics.length > 0) {
-      return res.status(404).json({
+      return res.status(200).json({
         status: true,
         message: "Topics found",
         data: topics,
