@@ -10,7 +10,7 @@ const topicMapSchema = new Schema({
     addedby: { type: String, default: 'admin' },
     editedby: { type: String, default: 'admin' },
     deleteflag: { type: Number, default: 0 } // 0 for not deleted, 1 for deleted
-});
+},{timestamps:true});
 
 // Create the model for topic mapping
 const TopicMap = mongoose.model('TopicMap', topicMapSchema);

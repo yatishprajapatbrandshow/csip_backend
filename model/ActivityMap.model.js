@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 // Define the schema for the model
 const ActivityMapSchema = new Schema({
     sid: {
-        type: String,
+        type: Number,
         required: true
     },
     participantid: {  // Assuming participantId is the correct casing, but you can change it
@@ -23,23 +23,23 @@ const ActivityMapSchema = new Schema({
     paymentStatus: {
         type: String,
         enum: ['success', 'pending', 'failed'],  // You can define valid statuses here
-      
+        default: 'pending'
+
     },
     paymentMode: {
         type: String,
         enum: ['card', 'netbanking', 'wallet', 'upi'],  // Define available payment modes here
-     
     },
     referenceNo: {
         type: String,
-     
     },
     razorpayId: {
         type: String,
     },
     status: {
-        type: Boolean,
-        default: true
+        type: String,
+        enum: ['Active', 'Inactive'],
+        default: 'Active'
     },
     addedOn: {
         type: Date,
@@ -58,7 +58,7 @@ const ActivityMapSchema = new Schema({
         type: Boolean,
         default: false  // Indicates whether the document is deleted (soft delete)
     }
-});
+}, { timestamps: true });
 
 // Create the model from the schema
 const ActivityMap = mongoose.model('activities_maps', ActivityMapSchema);

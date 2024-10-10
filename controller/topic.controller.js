@@ -55,7 +55,7 @@ const getTopics = async (req, res) => {
     }
 
     // Find topics that match the search query (case insensitive)
-    const existingTopicMap = await TopicMap.findOne({ participant_id: participant_id });
+    const existingTopicMap = await TopicMap.findOne({ participant_id: participant_id, status: 1 });
     const existingTopics = existingTopicMap.topic_id.split(',');
 
     if (existingTopicMap) {

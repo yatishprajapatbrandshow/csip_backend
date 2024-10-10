@@ -376,7 +376,7 @@ const activitySchema = new Schema({
         type: String,
         default: ""
     }
-});
+}, { timestamps: true });
 
 // Create the activity model
 module.exports = mongoose.model('Activity', activitySchema);

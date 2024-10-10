@@ -28,7 +28,7 @@ const ApiKeySchema = new Schema({
         type: String,
         required: true
     }
-});
+},{timestamps:true});
 
 // Create the model from the schema
 const ApiKey = mongoose.model('ApiKey', ApiKeySchema);

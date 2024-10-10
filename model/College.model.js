@@ -112,7 +112,7 @@ const collegeSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
-});
+},{timestamps:true});
 
 // Create a model from the schema
 const College = mongoose.model('collegeinfos', collegeSchema);

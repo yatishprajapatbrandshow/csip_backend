@@ -246,12 +246,23 @@ const applyActivity = async (req, res) => {
         const existingIds = existingActivityMaps.map(activityMap => activityMap.sid);
         const sid = await generateUniqueId(existingIds);
 
+        // Check If already Exits
+        const checkAlready = await ActivityMap.findOne({ participantid: participantId, activityid: activityId, status: 'Active' });
+
+        if (checkAlready) {
+            return res.status(400).json({
+                status: false,
+                message: 'Already Applied For This Activity',
+                data: checkAlready
+            })
+        }
+
         // Create new activity map document
         const newActivityMap = new ActivityMap({
             sid,
             participantid: participantId,
             activityid: activityId,
-            topicId: topic_id,
+            topicId: topic_id || 0,
             addedOn: new Date(),
             deleteflag: false
         });
@@ -274,8 +285,6 @@ const applyActivity = async (req, res) => {
         });
     }
 };
-
-
 // Generate unique ID function
 const generateUniqueId = async (existingIds) => {
     let id;

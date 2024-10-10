@@ -18,7 +18,7 @@ const topicSchema = new Schema({
     editedon: { type: Date, default: Date.now },
     editedby: { type: String, default: 'admin' },
     deleteflag: { type: Number, default: 0 } // 0 for not deleted, 1 for deleted
-});
+},{timestamps:true});
 
 // Create the model for topics
 const Topic = mongoose.model('Topic', topicSchema);
