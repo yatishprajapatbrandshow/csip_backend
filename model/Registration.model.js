@@ -71,9 +71,6 @@ const registrationSchema = new mongoose.Schema({
         type: Number,
         default: 1,
     },
-    company_logo: {
-        type: String,
-    }
 }, { timestamps: true });
 
 // Create and export the User model
