@@ -84,9 +84,9 @@ const createPayment = async (req, res) => {
                 data: false
             })
         }
-        const exitsOrnot = await Order.findOne({ sid: orderid, status: 'Active', deleteFlag: false });
+        const orderExits = await Order.findOne({ sid: orderid, status: 'Active', deleteFlag: false, payementStatus: "Pending" });
 
-        if (!exitsOrnot) {
+        if (!orderExits) {
             return res.status(404).json({
                 status: false,
                 message: 'Order id is not valid ',
@@ -124,13 +124,15 @@ const createPayment = async (req, res) => {
             status: 'Active',
         })
         const savedPayment = await newPayment.save();
-
+        orderExits.payementStatus = "Completed";
+        await orderExits.save();
         if (savedPayment) {
             const appliedActivity = await ActivityMap.findOne({ participantid: participantId, activityid: activityId, status: 'Active' });
             appliedActivity.paymentStatus = 'success'
             appliedActivity.paymentId = savedPayment?.sid
             appliedActivity.orderId = savedPayment?.orderid
             await appliedActivity.save();
+
             return res.status(201).json({
                 status: true,
                 message: 'New Payment Created Successfully',

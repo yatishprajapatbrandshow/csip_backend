@@ -1,4 +1,4 @@
-const { Order } = require("../model");
+const { Order, ActivityMap } = require("../model");
 const { userService, activityService } = require("../services");
 const generateUniqueId = require("../utils/randomSidGenerate.util");
 
@@ -37,6 +37,16 @@ const createOrder = async (req, res) => {
             return res.status(404).json({
                 status: false,
                 message: "Invalid Activity Id",
+                data: false
+            })
+        }
+
+        const activityApplied = await ActivityMap.find({ participantid, activityid, status: 'Active', paymentStatus: 'pending' });
+
+        if (!activityApplied || activityApplied.length === 0) {
+            return res.status(400).json({
+                status: false,
+                message: "No Applied Activity Found For this activityid",
                 data: false
             })
         }

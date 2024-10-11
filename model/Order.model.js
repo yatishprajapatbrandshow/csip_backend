@@ -28,6 +28,11 @@ const orderSchema = new Schema({
         type: Number,
         default: 0
     },
+    payementStatus: {
+        type: String,
+        enum: ['Pending', 'Completed'],
+        default: 'Pending'
+    },
     status: {
         type: String,
         enum: ['Active', 'Inactive'],
