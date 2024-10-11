@@ -30,7 +30,11 @@ const activitySchema = new Schema({
     activity_end_date: { type: Date, },
     submission_start_date: { type: Date, default: null },
     submission_end_date: { type: Date, default: null },
-    activity_type: { type: String, default: 'MCQ' },
+    activity_type: {
+        type: String,
+        enum: ['MCQ', "DIRECT"],
+        default: 'MCQ'
+    },
     need_approval: { type: Boolean, default: false },
     addedby: { type: String, default: 'admin' },
     editedby: { type: String, default: 'admin' },
