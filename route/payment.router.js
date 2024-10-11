@@ -10,7 +10,7 @@ const { paymentController } = require('../controller')
 router.get('/pending', paymentController.getPaymentPending);
 
 // Get Payment Pending
-router.post('/create', paymentController.getPaymentPending);
+router.post('/create', paymentController.createPayment);
 
 
 module.exports = router

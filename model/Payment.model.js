@@ -2,11 +2,11 @@ const mongoose = require('mongoose');
 
 const PaymentSchema = new mongoose.Schema({
     sid: {
-        type: String,
+        type: Number,
         required: true
     },
     orderid: {
-        type: String,
+        type: Number,
         required: true
     },
     razorpayId: {

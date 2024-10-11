@@ -1,5 +1,6 @@
 const { ActivityMap, Activity, Order, Payment } = require('../model');
-const { userService } = require('../services');
+const { userService, activityService } = require('../services');
+const generateUniqueId = require('../utils/randomSidGenerate.util');
 
 const getPaymentPending = async (req, res) => {
     try {
@@ -67,7 +68,22 @@ const createPayment = async (req, res) => {
                 data: false
             });
         }
-
+        const checkUserExits = await userService.checkIfExits(participantId);
+        if (!checkUserExits) {
+            return res.status(404).json({
+                status: false,
+                message: "No User Exists with this id",
+                data: false
+            })
+        }
+        const activityExists = await activityService.checkActivityExists(activityId);
+        if (!activityExists) {
+            return res.status(404).json({
+                status: false,
+                message: "Invalid Activity Id",
+                data: false
+            })
+        }
         const exitsOrnot = await Order.findOne({ sid: orderid, status: 'Active', deleteFlag: false });
 
         if (!exitsOrnot) {
@@ -80,7 +96,7 @@ const createPayment = async (req, res) => {
 
         const alreadyExists = await Payment.find({ orderid, status: 'Active', order_status: 'Success', deleteflag: false });
 
-        if (alreadyExists) {
+        if (alreadyExists.length !== 0) {
             return res.status(404).json({
                 status: false,
                 message: 'Payment Already Done for this OrderId',
@@ -107,12 +123,13 @@ const createPayment = async (req, res) => {
             trans_date,
             status: 'Active',
         })
-
         const savedPayment = await newPayment.save();
 
         if (savedPayment) {
             const appliedActivity = await ActivityMap.findOne({ participantid: participantId, activityid: activityId, status: 'Active' });
             appliedActivity.paymentStatus = 'success'
+            appliedActivity.paymentId = savedPayment?.sid
+            appliedActivity.orderId = savedPayment?.orderid
             await appliedActivity.save();
             return res.status(201).json({
                 status: true,
