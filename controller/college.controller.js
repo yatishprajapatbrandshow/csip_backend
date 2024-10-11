@@ -4,8 +4,6 @@ const { College } = require('../model')
 // Search Colleges
 const searchColleges = async (req, res) => {
     const { name, city, stream, page = 1, limit = 10 } = req.query; // Get pagination parameters
-    console.log(name);
-
     // Build the query based on provided parameters
     const query = {};
 
@@ -37,7 +35,6 @@ const searchColleges = async (req, res) => {
         // Calculate total pages
         const totalPages = Math.ceil(totalColleges / pageSize);
 
-        console.log(colleges);
 
         res.status(200).json({
             status: true,

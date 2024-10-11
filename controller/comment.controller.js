@@ -22,7 +22,6 @@ const getComments = async (req, res) => {
                 return { comment: ele, registration: userData[0] };
             })
         );
-        console.log(responseData);
 
         if (!responseData || responseData.length === 0) {
             return res.status(404).json({

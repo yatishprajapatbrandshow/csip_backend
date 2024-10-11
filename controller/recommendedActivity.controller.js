@@ -5,8 +5,6 @@ const { userService } = require('../services');
 const getReconmendedActivity = async (req, res) => {
     try {
         const { participant_id } = req.query;
-        console.log(participant_id);
-
         const checkUserExits = await userService.checkIfExits(participant_id);
         if (!checkUserExits) {
             return res.status(404).json({
