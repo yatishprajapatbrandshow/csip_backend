@@ -21,5 +21,7 @@ router.post("/apply", activityController.applyActivity);
 
 router.get("/applied", activityController.appliedActivity);
 
+router.get("/get-by-id", activityController.getActivitiyById);
+
 
 module.exports = router;

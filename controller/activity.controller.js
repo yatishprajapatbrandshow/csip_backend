@@ -154,6 +154,33 @@ const updateActivity = async (req, res) => {
     }
 };
 // Get Activity
+const getActivitiyById = async (req, res) => {
+    const { _id } = req.query; // Get page, limit, corporate_id, and date from query params
+
+    try {
+        const activitityData = await Activity.findById({ _id });
+        if (!activitityData) {
+            return res.status(404).json({
+                status: false,
+                message: "No activity data found",
+                data: false
+            })
+        }
+        return res.status(200).json({
+            status: true,
+            message: "Activity Found Successfully",
+            data: activitityData
+        })
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            status: false,
+            message: error.message,
+            data: false
+        });
+    }
+};
+// Get Activity
 const getActivities = async (req, res) => {
     const { page = 1, limit = 10, corporate_id, date } = req.query; // Get page, limit, corporate_id, and date from query params
 
@@ -371,5 +398,6 @@ module.exports = {
     getActivities,
     updateActivity,
     applyActivity,
-    appliedActivity
+    appliedActivity,
+    getActivitiyById
 };
