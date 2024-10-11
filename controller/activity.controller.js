@@ -158,6 +158,13 @@ const getActivitiyById = async (req, res) => {
     const { _id } = req.query; // Get page, limit, corporate_id, and date from query params
 
     try {
+        if (!_id || _id === "") {
+            return res.status(404).json({
+                status: false,
+                message: "Missing _id in params",
+                data: false
+            })
+        }
         const activitityData = await Activity.findById({ _id });
         if (!activitityData) {
             return res.status(404).json({
