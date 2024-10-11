@@ -23,15 +23,14 @@ const PaymentSchema = new mongoose.Schema({
     },
     tracking_id: {
         type: String,
-        required: true
     },
     bank_ref_no: {
         type: String,
-        required: true
     },
     order_status: {
         type: String,
         enum: ['Pending', 'Success', 'Failed'],  // Possible statuses
+        default: 'Pending',
         required: true
     },
     failure_message: {
@@ -65,7 +64,6 @@ const PaymentSchema = new mongoose.Schema({
     },
     addedby: {
         type: String,
-        required: true
     },
     editedon: {
         type: Date,

@@ -11,6 +11,7 @@ const collegeRouter = require('./college.router')
 const dashboardRouter = require('./dashboard.router')
 const paymentRouter = require('./payment.router')
 const commentRouter = require('./comment.router')
+const orderRouter = require('./order.router')
 module.exports = {
     registerRouter,
     otpRouter,
@@ -24,5 +25,6 @@ module.exports = {
     collegeRouter,
     dashboardRouter,
     paymentRouter,
-    commentRouter
+    commentRouter,
+    orderRouter
 }
