@@ -363,7 +363,7 @@ const applyActivity = async (req, res) => {
         res.status(201).json({
             status: true,
             message: 'Activity mapped successfully',
-            data: newActivityMap
+            data: savedActivityMap
         });
     } catch (error) {
         console.error('Error applying activity:', error); // Log the error for debugging
