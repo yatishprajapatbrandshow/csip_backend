@@ -46,11 +46,12 @@ const getPaymentPending = async (req, res) => {
 }
 const createPayment = async (req, res) => {
     try {
-        const { participantId, orderid, razorpayId, paidAmount, currency, tracking_id, bank_ref_no, order_status, failure_message, payment_mode, status_code, status_message, trans_date } = req.body;
+        const { participantId, activityId, orderid, razorpayId, paidAmount, currency, tracking_id, bank_ref_no, order_status, failure_message, payment_mode, status_code, status_message, trans_date } = req.body;
 
         // Validate required fields
         const missingFields = []; // Array to hold missing fields
         if (!participantId) missingFields.push('participantId');
+        if (!activityId) missingFields.push('activityId');
         if (!orderid) missingFields.push('orderid');
         if (!razorpayId) missingFields.push('razorpayId');
         if (!paidAmount) missingFields.push('paidAmount');
