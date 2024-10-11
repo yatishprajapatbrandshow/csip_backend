@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 // Define the schema for the model
-const ActivityMapSchema = new Schema({
+const orderSchema = new Schema({
     sid: {
         type: Number,
         required: true
@@ -16,26 +16,21 @@ const ActivityMapSchema = new Schema({
         type: Number,
         required: true
     },
-    topicId: {  // Assuming topicId is the correct casing
+    price: {
         type: Number,
         required: true
     },
-    paymentStatus: {
-        type: String,
-        enum: ['success', 'pending', 'failed'],  // You can define valid statuses here
-        default: 'pending'
-    },
-    orderId: {
+    discount: {
         type: Number,
         default: 0
     },
-    paymentId: {
+    voucher: {
         type: Number,
         default: 0
     },
     status: {
         type: String,
-        enum: ['Active', 'Inactive', 'SubmisionPending', 'Ongoing', 'Completed'],
+        enum: ['Active', 'Inactive'],
         default: 'Active'
     },
     addedOn: {
@@ -58,6 +53,6 @@ const ActivityMapSchema = new Schema({
 }, { timestamps: true });
 
 // Create the model from the schema
-const ActivityMap = mongoose.model('activities_maps', ActivityMapSchema);
+const Order = mongoose.model('orders', orderSchema);
 
-module.exports = ActivityMap;
+module.exports = Order;

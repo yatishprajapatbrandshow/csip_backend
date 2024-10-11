@@ -32,8 +32,8 @@ const activitySchema = new Schema({
     submission_end_date: { type: Date, default: null },
     activity_type: {
         type: String,
-        enum: ['MCQ', "DIRECT"],
-        default: 'MCQ'
+        // enum: ['MCQ', "DIRECT"],
+        default: 'DIRECT'
     },
     need_approval: { type: Boolean, default: false },
     addedby: { type: String, default: 'admin' },

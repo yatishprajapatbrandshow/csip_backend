@@ -291,6 +291,7 @@ const appliedActivity = async (req, res) => {
         });
     }
 };
+
 const applyActivity = async (req, res) => {
     try {
         const {
@@ -362,7 +363,7 @@ const applyActivity = async (req, res) => {
         res.status(201).json({
             status: true,
             message: 'Activity mapped successfully',
-            data: { id: savedActivityMap._id, sid }
+            data: newActivityMap
         });
     } catch (error) {
         console.error('Error applying activity:', error); // Log the error for debugging
@@ -373,6 +374,7 @@ const applyActivity = async (req, res) => {
         });
     }
 };
+
 // Generate unique ID function
 const generateUniqueId = async (existingIds) => {
     let id;
