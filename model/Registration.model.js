@@ -29,7 +29,7 @@ const registrationSchema = new mongoose.Schema({
     },
     gender: {
         type: String,
-        enum: ['Male', 'Female', 'Other'],
+        enum: ['male', 'female', 'other'],
     },
     city: {
         type: String,
@@ -45,14 +45,14 @@ const registrationSchema = new mongoose.Schema({
     },
     tshirtsize: {
         type: String,
-        enum: ['Small', 'Medium', 'Large', 'Extra Large'],
+        enum: ['s', 'm', 'l', 'xl'],
     },
     aadhar_number: {
         type: Number,
     },
     type: {
         type: String,
-        enum: ['Participant', 'Admin'],
+        enum: ['Participant', 'Admin','Corporate'],
         default: 'Participant',
     },
     added_by: {

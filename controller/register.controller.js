@@ -140,8 +140,8 @@ const updateUser = async (req, res) => {
         user.name = name || user.name;
         user.email = email || user.email;
         user.mobile = mobile || user.mobile;
-        user.dob = dob || user.dob;
-        user.gender = gender || user.gender;
+        user.dob = new Date(dob) || user.dob;
+        user.gender = gender.toLowerCase() || user.gender;
         user.city = city || user.city;
         user.state = state || user.state;
         user.pincode = pincode || user.pincode;
@@ -171,66 +171,48 @@ const updateUser = async (req, res) => {
     }
 };
 
-// const getUser=async (req,res)=>{
-//     try {
-//         const { sid, name, email, mobile, } = req.body;
+const getUser = async (req, res) => {
+    try {
+        const { participant_id } = req.query;
 
-//         // Validate required fields
-//         if (!sid) {
-//             return res.status(400).json({ message: "Missing required fields. sid" });
-//         }
+        // Validate required fields
+        if (!participant_id || participant_id === "") {
+            return res.status(400).json({ status: false, message: "Missing required fields. participant_id", data: false });
+        }
 
-//         // Validate password if provided
-//         if (password) {
-//             if (password.length < 5) {
-//                 return res.status(400).json({ message: "Password must be at least 5 characters long." });
-//             }
+        // Find user by sid
+        const user = await Registration.findOne({ sid: participant_id, status: 1 });
 
-//             // Check if passwords match
-//             if (password !== r_password) {
-//                 return res.status(400).json({ message: "Passwords do not match." });
-//             }
-//         }
+        if (!user) {
+            return res.status(404).json({ status: false, message: "User not found.", data: false });
+        }
 
-//         // Find user by sid
-//         const user = await Registration.findOne({ sid });
+        // Define required fields for profile completion
+        const requiredFields = ['name', 'email', 'mobile', 'gender', 'dob', 'city', 'state', 'pincode', 'participantpic', 'tshirtsize', 'aadhar_number'];
 
-//         if (!user) {
-//             return res.status(404).json({ message: "User not found." });
-//         }
+        // Calculate how many fields are filled out
+        const completedFields = requiredFields.filter(field => user[field] && user[field] !== "" && user[field] !== undefined && user[field] !== null).length;
 
-//         // Update user data
-//         user.name = name || user.name;
-//         user.email = email || user.email;
-//         user.mobile = mobile || user.mobile;
-//         user.dob = dob || user.dob;
-//         user.gender = gender || user.gender;
-//         user.city = city || user.city;
-//         user.state = state || user.state;
-//         user.pincode = pincode || user.pincode;
-//         user.participantpic = participantpic || user.participantpic;
-//         user.tshirtsize = tshirtsize || user.tshirtsize;
-//         user.aadhar_number = aadhar_number || user.aadhar_number;
+        // Calculate the profile completion percentage
+        const profilePercentage = Math.round((completedFields / requiredFields.length) * 100);
 
-//         // If password is provided, hash it and update
-//         if (password) {
-//             user.password = await bcrypt.hash(password, 10);
-//         }
+        // Convert Mongoose document to plain object
+        const userObj = user.toObject(); // This prevents mutation of the original document
+        delete userObj.password
+        delete userObj.__v
+        delete userObj.added_by
+        delete userObj.edited_by
+        delete userObj.delete_flag
+        // Add profilePercentage to the user object
+        userObj.profilePercentage = profilePercentage;
 
-//         // Set 'edited_by' and update timestamps automatically
-//         user.edited_by = req.user ? req.user.id : 0; // Assuming `req.user` contains logged-in user data
+        // Return the user object with profilePercentage
+        return res.status(200).json({ status: true, message: "User retrieved successfully.", data: userObj });
 
-//         // Save the updated user
-//         const updatedUser = await user.save();
+    } catch (error) {
+        console.error("Error fetching user: ", error);
+        return res.status(500).json({ message: "An error occurred while fetching the user." });
+    }
+}
 
-//         if (updatedUser) {
-//             return res.status(200).json({ message: "User updated successfully.", user: updatedUser });
-//         } else {
-//             return res.status(500).json({ message: "Failed to update user." });
-//         }
-//     } catch (error) {
-//         console.error("Error updating user: ", error);
-//         return res.status(500).json({ message: "An error occurred during the update process." });
-//     }
-// }
-module.exports = { register, updateUser };
+module.exports = { register, updateUser, getUser };
