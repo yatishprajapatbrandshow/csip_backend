@@ -4,7 +4,6 @@ const { userService } = require('../services');
 const getData = async (req, res) => {
     try {
         const { participant_id } = req.query;
-        console.log(participant_id);
 
         const checkUserExits = await userService.checkIfExits(participant_id);
         let topicStudying;
@@ -15,13 +14,42 @@ const getData = async (req, res) => {
                 data: false
             })
         }
-        // Activities maped
-        const activityApplied = await ActivityMap.find({ participantid: participant_id, status: 'Active' });
-        const activityIds = activityApplied.map(activity => activity.activityid);
+        // All Activities Maped
+        const allMappedActivities = await ActivityMap.find({ participantid: participant_id, status: { $ne: 'Inactive' } });
+        const activityIds = allMappedActivities.map(activity => activity.activityid);
         const activities = await Activity.find({ sid: { $in: activityIds }, status: 1 });
 
-        // Filter activities where paymentStatus is 'pending'
-        const paymentPending = activityApplied.filter(activity => activity.paymentStatus === 'pending');
+        // Separate activities by status
+        const completedActivityIds = [];
+        const ongoingActivityIds = [];
+        const submissionPendingActivityIds = [];
+
+        // Loop through all mapped activities and categorize them by status
+        allMappedActivities.forEach(activity => {
+            switch (activity.status) {
+                case 'Completed':
+                    completedActivityIds.push(activity.activityid);
+                    break;
+                case 'Ongoing':
+                    ongoingActivityIds.push(activity.activityid);
+                    break;
+                case 'SubmisionPending':
+                    submissionPendingActivityIds.push(activity.activityid); // Same as 'Ongoing' based on your initial code
+                    break;
+                default:
+                    break;
+            }
+        });
+
+        // Activities maped Completed
+        const activitiesCompleted = await Activity.find({ sid: { $in: completedActivityIds }, status: 1 });
+        // Activities maped Ongoing
+        const activitiesOngoing = await Activity.find({ sid: { $in: ongoingActivityIds }, status: 1 });
+        // Activities maped Ongoing
+        const activitiesSubmissionPending = await Activity.find({ sid: { $in: submissionPendingActivityIds }, status: 1 });
+
+        // Filter All activities where paymentStatus is 'pending'
+        const paymentPending = allMappedActivities.filter(activity => activity.paymentStatus === 'pending');
         const activityIdsPaymentPending = paymentPending.map(activity => activity.activityid);
         const activitiesPaymentPending = await Activity.find({ sid: { $in: activityIdsPaymentPending } });
 
@@ -31,17 +59,6 @@ const getData = async (req, res) => {
         if (existingTopicMap) {
             topicStudying = await Topic.find({ sid: { $in: existingTopics } });
         }
-        // Ongoing activities
-        // const todayDate = new Date();
-        // // Filter activities where today's date is before the activity's end date
-        // const ongoingActivities = activities.filter(activity => {
-        //     const endDate = new Date(activity?.activity_end_date);
-        //     console.log(endDate);
-
-        //     return todayDate <= endDate;
-        // });
-
-        // console.log(ongoingActivities);
 
         return res.status(200).json({
             status: true,
@@ -50,9 +67,9 @@ const getData = async (req, res) => {
                 topicStudying: topicStudying.length === 0 ? false : topicStudying,
                 activityApplied: activities.length === 0 ? false : activities,
                 paymentPending: activitiesPaymentPending.length === 0 ? false : activitiesPaymentPending,
-                submissionPending: false,
-                ongoingActivities: false,
-                completedActivities: false,
+                submissionPending: activitiesSubmissionPending.length === 0 ? false : activitiesSubmissionPending,
+                ongoingActivities: activitiesOngoing.length === 0 ? false : activitiesOngoing,
+                completedActivities: activitiesCompleted.length === 0 ? false : activitiesCompleted,
                 totalScore: false
             }
         })
