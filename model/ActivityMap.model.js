@@ -38,7 +38,7 @@ const ActivityMapSchema = new Schema({
     },
     status: {
         type: String,
-        enum: ['Active', 'Inactive'],
+        enum: ['Active', 'Inactive','SubmisstionPending','Ongoing','Completed'],
         default: 'Active'
     },
     addedOn: {

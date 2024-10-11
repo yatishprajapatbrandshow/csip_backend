@@ -20,8 +20,8 @@ const CurriculumGroupTopicMapSchema = new mongoose.Schema({
         required: true,  // Reference to topic's SID
     },
     status: {
-        type: Boolean,
-        default: true,   // Status of the topic, defaults to true (active)
+        type: Number,
+        default: 0,   // Status of the topic, defaults to true (active)
     },
     addedby: {
         type: String,

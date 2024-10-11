@@ -1,4 +1,4 @@
-const { Curriculum, CurriculumGroupMap, ParticipantCurriculumMap } = require('../model');
+const { Curriculum, CurriculumGroupMap, ParticipantCurriculumMap,CurriculumGroupTopicMap } = require('../model');
 const { userService } = require('../services');
 // Assuming the model is in a `models` folder
 const generateUniqueId = require('../utils/randomSidGenerate.util')
@@ -103,45 +103,8 @@ const getCurriculumDetails = async (req, res) => {
         if (!curriculum) {
             return res.status(404).json({ status: false, message: "Curriculum not found.", data: false });
         }
-
-        // Fetch groups and topics related to the curriculum
-        const groupsWithTopics = await CurriculumGroupMap.aggregate([
-            { $match: { curriculum_sid: Number(curriculum_sid), deleteflag: false } },  // Match groups by curriculum_sid
-            {
-                $lookup: {
-                    from: 'curri_group_topic_maps',  // Collection for topics mapping
-                    localField: 'sid',  // Group SID in CurriculumGroupMap
-                    foreignField: 'gorup_sid',  // Group SID in CurriculumGroupTopicMap
-                    as: 'topicMappings'  // Embedded array of topic mappings within the group
-                }
-            },
-            {
-                $unwind: { path: '$topicMappings', preserveNullAndEmptyArrays: true }  // Unwind the topicMappings array
-            },
-            {
-                $lookup: {
-                    from: 'topics',  // Collection for full topic details
-                    localField: 'topicMappings.topic_sid',  // Match topic_sid from the topicMappings
-                    foreignField: 'sid',  // The topic's sid in the Topics collection
-                    as: 'topicDetails'  // Embedded array of topic details
-                }
-            },
-            {
-                $unwind: { path: '$topicDetails', preserveNullAndEmptyArrays: true }  // Unwind the topicDetails array
-            },
-            {
-                $group: {
-                    _id: '$sid',  // Group by group SID
-                    groupName: { $first: '$group_name' },  // Include group name
-                    groupindex: { $first: '$groupIndex' },  // Include group name
-                    topics: { $push: '$topicDetails' }  // Accumulate topic details
-                }
-            },
-            {
-                $sort: { groupindex: 1 }  // Sort groups by groupIndex in ascending order (1 for ascending, -1 for descending)
-            }
-        ]);
-
+        
+       
         // Return the curriculum along with the groups and topics
         return res.status(200).json({
             status: true,
