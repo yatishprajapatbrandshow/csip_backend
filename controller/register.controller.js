@@ -98,11 +98,11 @@ const register = async (req, res) => {
 };
 const updateUser = async (req, res) => {
     try {
-        const { sid, name, email, mobile, dob, gender, city, state, pincode, participantpic, tshirtsize, aadhar_number, password, r_password } = req.body;
+        const { sid, name, email, mobile, dob, gender, city, state, pincode, participantpic, tshirtsize, aadhar_number, oldPassword, password, r_password } = req.body;
 
         // Validate required fields
         if (!sid) {
-            return res.status(400).json({ message: "Missing required fields. sid" });
+            return res.status(400).json({ status: false, message: "Missing required fields. sid", data: false });
         }
 
         // Validate email
@@ -119,13 +119,18 @@ const updateUser = async (req, res) => {
 
         // Validate password if provided
         if (password) {
+            if (!oldPassword || oldPassword.trim() === "") {
+                return res.status(400).json({
+                    status: false, message: "Missing required fields. sid", data: false
+                });
+            }
             if (password.length < 5) {
-                return res.status(400).json({ message: "Password must be at least 5 characters long." });
+                return res.status(400).json({ status: false, message: "Password must be at least 5 characters long.", data: false });
             }
 
             // Check if passwords match
             if (password !== r_password) {
-                return res.status(400).json({ message: "Passwords do not match." });
+                return res.status(400).json({ status: false, message: "Passwords do not match.", data: false });
             }
         }
 
@@ -133,7 +138,7 @@ const updateUser = async (req, res) => {
         const user = await Registration.findOne({ sid });
 
         if (!user) {
-            return res.status(404).json({ message: "User not found." });
+            return res.status(404).json({ message: "User not found.", data: false });
         }
 
         // Update user data
@@ -161,13 +166,13 @@ const updateUser = async (req, res) => {
         const updatedUser = await user.save();
 
         if (updatedUser) {
-            return res.status(200).json({ message: "User updated successfully.", user: updatedUser });
+            return res.status(200).json({ status: true, message: "User updated successfully.", data: updatedUser });
         } else {
-            return res.status(500).json({ message: "Failed to update user." });
+            return res.status(500).json({ status: false, message: "Failed to update user.", data: false });
         }
     } catch (error) {
         console.error("Error updating user: ", error);
-        return res.status(500).json({ message: "An error occurred during the update process." });
+        return res.status(500).json({ status: false, message: "An error occurred during the update process.", data: false });
     }
 };
 
