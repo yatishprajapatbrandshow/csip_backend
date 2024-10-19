@@ -12,6 +12,7 @@ const Comments = require('./Comments.model')
 const CurriculumGroupTopicMap = require('./CurriculumGroupTopicMap.model')
 const Order = require('./Order.model')
 const Payment = require('./Payment.model')
+const Study = require('./Study.model')
 module.exports = {
     Activity,
     Topic,
@@ -26,5 +27,6 @@ module.exports = {
     Comments,
     CurriculumGroupTopicMap,
     Order,
-    Payment
+    Payment,
+    Study
 }

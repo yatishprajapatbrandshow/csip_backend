@@ -12,6 +12,7 @@ const dashboardController = require('./dashboard.controller')
 const paymentController = require('./Payment.controller')
 const commentController = require('./comment.controller')
 const orderController = require('./order.controller')
+const studyController = require('./study.controller')
 module.exports = {
     registerController,
     loginController,
@@ -26,5 +27,6 @@ module.exports = {
     dashboardController,
     paymentController,
     commentController,
-    orderController
+    orderController,
+    studyController
 }
